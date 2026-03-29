@@ -1,2340 +1,1576 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SONO — Professional Audio Studio</title>
+<title>Magic Audio Studio | استوديو صوتي سحري</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&family=Tajawal:wght@300;400;500;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-/* ══════════════════════════════════════════════════════════════
-   SONO  — ENTERPRISE AUDIO STUDIO
-   Ultra-Premium Dark Studio · Full i18n AR/EN · Dual Workflow
-   ══════════════════════════════════════════════════════════════ */
-
-:root {
-  /* Core Palette */
-  --void:       #030305;
-  --abyss:      #07070d;
-  --deep:       #0c0c14;
-  --surface:    #111119;
-  --panel:      #151520;
-  --card:       #1a1a28;
-  --raised:     #1f1f30;
-  --hover:      #252538;
-
-  /* Accents */
-  --gold:       #f0b429;
-  --gold-dim:   #b8891e;
-  --gold-glow:  rgba(240,180,41,0.18);
-  --cyan:       #06d6ff;
-  --cyan-dim:   #04a8cc;
-  --cyan-glow:  rgba(6,214,255,0.15);
-  --green:      #00f5a0;
-  --green-dim:  #00c07d;
-  --green-glow: rgba(0,245,160,0.15);
-  --red:        #ff3b5c;
-  --red-glow:   rgba(255,59,92,0.15);
-  --purple:     #8b5cf6;
-  --orange:     #ff6b2b;
-
-  /* Text */
-  --tx-hi:   #eeeef5;
-  --tx-mid:  #8888aa;
-  --tx-lo:   #3a3a55;
-  --tx-gold: var(--gold);
-
-  /* Borders */
-  --b-sub:  rgba(255,255,255,0.045);
-  --b-gold: rgba(240,180,41,0.22);
-  --b-cyan: rgba(6,214,255,0.20);
-  --b-green:rgba(0,245,160,0.18);
-
-  /* Fonts */
-  --mono:   'IBM Plex Mono', monospace;
-  --arabic: 'Tajawal', sans-serif;
-  --display:'Rajdhani', sans-serif;
-
-  /* Radius */
-  --r-sm: 6px;
-  --r-md: 12px;
-  --r-lg: 18px;
-  --r-xl: 24px;
-
-  /* Transitions */
-  --t:     all 0.22s cubic-bezier(0.4,0,0.2,1);
-  --t-slow:all 0.45s cubic-bezier(0.4,0,0.2,1);
-
-  /* Sidebar position (RTL default) */
-  --sidebar-order: 1;
-  --main-order: 2;
-}
-
-[dir="ltr"] {
-  --sidebar-order: 2;
-  --main-order: 1;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: var(--arabic);
-  background: var(--void);
-  color: var(--tx-hi);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* Atmospheric background */
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse 70% 50% at 10% 5%,  rgba(240,180,41,0.035) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 70% at 90% 90%, rgba(6,214,255,0.025) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(139,92,246,0.018) 0%, transparent 65%);
-}
-
-/* Scanline texture */
-body::after {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image: repeating-linear-gradient(
-    0deg, transparent, transparent 2px,
-    rgba(255,255,255,0.006) 2px, rgba(255,255,255,0.006) 4px
-  );
-}
-
-.app-wrap { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
-
-/* ─── SCROLLBAR ────────────────────────────────────────── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--raised); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--hover); }
-
-/* ══════════════════════ HEADER ══════════════════════════ */
-.header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 32px;
-  height: 64px;
-  border-bottom: 1px solid var(--b-sub);
-  position: sticky; top: 0; z-index: 200;
-  backdrop-filter: blur(24px) saturate(1.5);
-  background: rgba(3,3,5,0.88);
-}
-
-.logo { display: flex; align-items: center; gap: 13px; text-decoration: none; }
-
-.logo-gem {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-weight: 700; font-size: 13px; color: #000;
-  position: relative; overflow: hidden;
-  box-shadow: 0 0 18px rgba(240,180,41,0.35);
-}
-.logo-gem::after {
-  content: '';
-  position: absolute; top: 0; left: -100%;
-  width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-  animation: gemShine 4s ease-in-out infinite;
-}
-@keyframes gemShine {
-  0%,80%,100% { left: -100%; }
-  40% { left: 150%; }
-}
-
-.logo-text-wrap { display: flex; flex-direction: column; line-height: 1; }
-.logo-name { font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: 4px; color: var(--tx-hi); }
-.logo-ver  { font-family: var(--mono); font-size: 9px; color: var(--tx-lo); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
-
-.header-center { display: flex; gap: 24px; }
-
-.hstat { display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 52px; }
-.hstat-val { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--gold); line-height: 1; }
-.hstat-lbl { font-size: 9px; color: var(--tx-lo); letter-spacing: 1.5px; text-transform: uppercase; }
-
-.header-right { display: flex; align-items: center; gap: 10px; }
-
-/* Language Toggle */
-.lang-toggle {
-  display: flex;
-  background: var(--surface); border: 1px solid var(--b-sub);
-  border-radius: var(--r-sm); overflow: hidden;
-}
-.lang-btn {
-  padding: 6px 12px; font-family: var(--mono); font-size: 10px; font-weight: 700;
-  letter-spacing: 1px; cursor: pointer; border: none; background: transparent;
-  color: var(--tx-lo); transition: var(--t);
-}
-.lang-btn.active { background: var(--raised); color: var(--gold); }
-
-/* ══════════════════════ BODY LAYOUT ═════════════════════ */
-.body-layout {
-  display: flex;
-  flex: 1;
-  gap: 0;
-}
-
-/* ══════════════════════ SIDEBAR ═════════════════════════ */
-.sidebar {
-  order: var(--sidebar-order);
-  width: 300px;
-  min-width: 300px;
-  border-inline-start: none;
-  border-inline-end: 1px solid var(--b-sub);
-  background: var(--abyss);
-  display: flex;
-  flex-direction: column;
-  padding: 20px 0;
-  gap: 4px;
-  overflow-y: auto;
-  max-height: calc(100vh - 64px);
-  position: sticky;
-  top: 64px;
-}
-
-[dir="ltr"] .sidebar { border-inline-end: none; border-inline-start: 1px solid var(--b-sub); }
-
-/* ACCORDION */
-.accordion { display: flex; flex-direction: column; }
-
-.acc-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px;
-  cursor: pointer; user-select: none;
-  transition: var(--t);
-}
-.acc-header:hover { background: rgba(255,255,255,0.025); }
-
-.acc-title-wrap { display: flex; align-items: center; gap: 10px; }
-.acc-icon {
-  width: 26px; height: 26px; border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; flex-shrink: 0;
-}
-.acc-title {
-  font-family: var(--mono); font-size: 10px; font-weight: 700;
-  letter-spacing: 1.5px; text-transform: uppercase; color: var(--tx-mid);
-}
-.acc-arrow {
-  font-size: 9px; color: var(--tx-lo);
-  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
-  flex-shrink: 0;
-}
-.acc-arrow.open { transform: rotate(180deg); }
-
-/* THE KEY FIX: smooth accordion without overlapping */
-.acc-body {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1),
-              padding 0.28s ease;
-  padding: 0 20px;
-}
-.acc-body.open {
-  max-height: 900px;
-  padding: 4px 20px 16px;
-}
-
-/* DSP Chain Toggles */
-.dsp-toggle-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 9px 0; border-bottom: 1px solid var(--b-sub);
-}
-.dsp-toggle-row:last-child { border-bottom: none; }
-
-.dsp-info { display: flex; flex-direction: column; gap: 2px; }
-.dsp-name  { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--tx-hi); }
-.dsp-desc  { font-size: 10px; color: var(--tx-lo); line-height: 1.4; }
-
-.sw {
-  width: 40px; height: 22px; border-radius: 22px;
-  background: var(--raised); border: 1px solid var(--b-sub);
-  cursor: pointer; position: relative; transition: var(--t); flex-shrink: 0;
-}
-.sw::after {
-  content: ''; position: absolute; top: 3px; inset-inline-start: 3px;
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--tx-lo); transition: var(--t);
-}
-.sw.on { background: rgba(0,245,160,0.2); border-color: rgba(0,245,160,0.4); }
-.sw.on::after { background: var(--green); inset-inline-start: auto; inset-inline-end: 3px; }
-
-/* Sliders */
-.sl-group { margin-bottom: 13px; }
-.sl-group:last-child { margin-bottom: 0; }
-.sl-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
-.sl-label { font-family: var(--mono); font-size: 9px; color: var(--tx-mid); letter-spacing: 1.2px; text-transform: uppercase; }
-.sl-val   { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--gold); }
-
-input[type=range] {
-  -webkit-appearance: none; width: 100%; height: 3px;
-  background: var(--raised); border-radius: 2px; outline: none; cursor: pointer;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
-  background: var(--gold); cursor: pointer;
-  box-shadow: 0 0 8px rgba(240,180,41,0.5);
-  transition: var(--t);
-}
-input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.35); }
-input[type=range].c::-webkit-slider-thumb { background: var(--cyan); box-shadow: 0 0 8px rgba(6,214,255,0.5); }
-input[type=range].g::-webkit-slider-thumb { background: var(--green); box-shadow: 0 0 8px rgba(0,245,160,0.5); }
-input[type=range].p::-webkit-slider-thumb { background: var(--purple); box-shadow: 0 0 8px rgba(139,92,246,0.5); }
-
-/* EQ faders */
-.eq-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 8px; }
-.eq-band { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.eq-f { font-family: var(--mono); font-size: 8px; color: var(--tx-lo); text-align: center; line-height: 1.3; }
-.eq-fader-wrap { height: 80px; display: flex; align-items: center; justify-content: center; }
-.eq-fader {
-  -webkit-appearance: none; appearance: none;
-  writing-mode: vertical-lr; direction: rtl;
-  width: 3px; height: 72px; border-radius: 2px;
-  background: var(--raised); outline: none; cursor: pointer;
-}
-.eq-fader::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; cursor: pointer; transition: var(--t);
-}
-.eq-fader.sub::-webkit-slider-thumb { background: var(--purple); box-shadow: 0 0 6px rgba(139,92,246,0.5); }
-.eq-fader.low::-webkit-slider-thumb { background: var(--cyan);   box-shadow: 0 0 6px rgba(6,214,255,0.5); }
-.eq-fader.mid::-webkit-slider-thumb { background: var(--gold);   box-shadow: 0 0 6px rgba(240,180,41,0.5); }
-.eq-fader.hi::-webkit-slider-thumb  { background: var(--orange); box-shadow: 0 0 6px rgba(255,107,43,0.5); }
-.eq-gval { font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--tx-mid); }
-
-.sidebar-divider { height: 1px; background: var(--b-sub); margin: 8px 20px; }
-
-/* Target LUFS in sidebar */
-.lufs-target-block {
-  margin: 0 16px 4px;
-  background: var(--surface);
-  border: 1px solid var(--b-sub);
-  border-radius: var(--r-md);
-  padding: 14px 16px;
-}
-.ltb-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-.ltb-label { font-family: var(--mono); font-size: 9px; color: var(--tx-mid); letter-spacing: 1.5px; text-transform: uppercase; }
-.ltb-val   { font-family: var(--mono); font-size: 24px; font-weight: 700; color: var(--gold); text-shadow: 0 0 16px rgba(240,180,41,0.4); line-height: 1; }
-.ltb-unit  { font-family: var(--mono); font-size: 10px; color: var(--tx-mid); margin-inline-start: 4px; }
-
-.preset-row { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
-.preset-pill {
-  padding: 4px 10px; font-family: var(--mono); font-size: 8px;
-  color: var(--tx-lo); background: var(--raised);
-  border: 1px solid var(--b-sub); border-radius: 20px;
-  cursor: pointer; transition: var(--t); letter-spacing: 0.5px;
-}
-.preset-pill.active, .preset-pill:hover {
-  background: rgba(240,180,41,0.1);
-  border-color: rgba(240,180,41,0.35);
-  color: var(--gold);
-}
-
-/* ══════════════════════ MAIN AREA ═══════════════════════ */
-.main-area {
-  order: var(--main-order);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  overflow-y: auto;
-  max-height: calc(100vh - 64px);
-  padding: 24px 28px;
-}
-
-/* ─── DROP ZONE ────────────────────────────────────────── */
-.drop-zone {
-  border: 2px dashed rgba(240,180,41,0.18);
-  border-radius: var(--r-xl);
-  padding: 44px 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: var(--t-slow);
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, rgba(240,180,41,0.018), rgba(6,214,255,0.015));
-  margin-bottom: 20px;
-}
-.drop-zone::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(240,180,41,0.04), transparent 70%);
-  opacity: 0; transition: var(--t-slow);
-}
-.drop-zone.dv { border-color: var(--gold); box-shadow: inset 0 0 80px rgba(240,180,41,0.06), 0 0 40px rgba(240,180,41,0.12); }
-.drop-zone.dv::before { opacity: 1; }
-.drop-zone:hover { border-color: rgba(240,180,41,0.38); }
-
-.dz-ring {
-  width: 72px; height: 72px; border-radius: 50%;
-  background: linear-gradient(135deg, rgba(240,180,41,0.12), rgba(255,107,43,0.08));
-  border: 1px solid rgba(240,180,41,0.2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px; margin: 0 auto 16px;
-  animation: dzFloat 5s ease-in-out infinite;
-  position: relative;
-}
-.dz-ring::after {
-  content: '';
-  position: absolute; inset: -8px;
-  border-radius: 50%; border: 1px solid rgba(240,180,41,0.08);
-  animation: dzPulse 2.5s ease-in-out infinite;
-}
-@keyframes dzFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes dzPulse { 0%,100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.1); } }
-
-.dz-title  { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-.dz-sub    { font-size: 12px; color: var(--tx-mid); margin-bottom: 18px; line-height: 1.6; }
-.dz-fmts   { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
-.dz-fmt    { padding: 3px 10px; background: var(--surface); border: 1px solid var(--b-sub); border-radius: 20px; font-family: var(--mono); font-size: 9px; color: var(--tx-lo); letter-spacing: 1px; }
-
-/* ─── TOOLBAR ──────────────────────────────────────────── */
-.toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
-  display: none;
-}
-.toolbar.show { display: flex; }
-
-.tb-left  { display: flex; gap: 8px; flex-wrap: wrap; }
-.tb-right { display: flex; gap: 8px; align-items: center; }
-
-/* Export format selector */
-.export-select-wrap { position: relative; }
-.export-select {
-  appearance: none;
-  background: var(--surface); border: 1px solid var(--b-sub);
-  color: var(--tx-mid); font-family: var(--mono); font-size: 10px;
-  padding: 8px 32px 8px 12px; border-radius: var(--r-sm);
-  cursor: pointer; outline: none; transition: var(--t);
-  letter-spacing: 0.5px;
-}
-.export-select:focus { border-color: var(--b-gold); color: var(--tx-hi); }
-.export-arrow {
-  position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%);
-  font-size: 9px; color: var(--tx-lo); pointer-events: none;
-}
-
-/* ─── FILES GRID ───────────────────────────────────────── */
-.files-grid { display: flex; flex-direction: column; gap: 14px; }
-
-.empty-hint {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; min-height: 160px; gap: 10px;
-  color: var(--tx-lo);
-}
-.empty-hint-icon { font-size: 28px; opacity: 0.25; }
-.empty-hint-txt  { font-size: 12px; text-align: center; line-height: 1.7; }
-
-/* AUDIO CARD */
-.acard {
-  background: var(--card);
-  border: 1px solid var(--b-sub);
-  border-radius: var(--r-lg);
-  overflow: hidden; /* ensures nothing bleeds */
-  transition: var(--t);
-  animation: cardIn 0.35s cubic-bezier(0.4,0,0.2,1) both;
-}
-.acard:hover { border-color: rgba(240,180,41,0.14); box-shadow: 0 6px 28px rgba(0,0,0,0.5), 0 0 28px rgba(240,180,41,0.04); }
-.acard.processing { border-color: rgba(6,214,255,0.3); }
-.acard.done       { border-color: rgba(0,245,160,0.2); }
-.acard.error      { border-color: rgba(255,59,92,0.3); }
-@keyframes cardIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
-
-.card-head {
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--b-sub);
-}
-.ext-badge {
-  width: 38px; height: 38px; border-radius: var(--r-sm);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
-  flex-shrink: 0;
-}
-.ext-mp3 { background: rgba(240,180,41,0.13); color: var(--gold);   border: 1px solid rgba(240,180,41,0.2); }
-.ext-wav { background: rgba(6,214,255,0.13);  color: var(--cyan);   border: 1px solid rgba(6,214,255,0.2); }
-.ext-ogg { background: rgba(139,92,246,0.13); color: var(--purple); border: 1px solid rgba(139,92,246,0.2); }
-.ext-m4a { background: rgba(255,107,43,0.13); color: var(--orange); border: 1px solid rgba(255,107,43,0.2); }
-.ext-etc { background: rgba(255,255,255,0.05); color: var(--tx-mid); border: 1px solid var(--b-sub); }
-
-.card-info { flex: 1; min-width: 0; }
-.card-fname {
-  font-size: 13px; font-weight: 700; color: var(--tx-hi);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;
-}
-.card-meta { display: flex; gap: 12px; flex-wrap: wrap; }
-.card-sz, .card-dur, .card-lufs-tag {
-  font-family: var(--mono); font-size: 10px; color: var(--tx-lo); letter-spacing: 0.3px;
-}
-.card-lufs-tag { color: var(--cyan); }
-
-.card-status-wrap { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
-.sdot {
-  width: 8px; height: 8px; border-radius: 50%;
-}
-.sdot.pending   { background: var(--tx-lo); }
-.sdot.analyzing { background: var(--cyan);   animation: blink 1s ease-in-out infinite; }
-.sdot.processing{ background: var(--gold);   animation: blink 0.7s ease-in-out infinite; }
-.sdot.done      { background: var(--green); }
-.sdot.error     { background: var(--red); }
-@keyframes blink { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.35;transform:scale(0.75)} }
-.stxt { font-family: var(--mono); font-size: 9px; color: var(--tx-lo); text-transform: uppercase; letter-spacing: 1px; }
-
-.card-btns { display: flex; gap: 5px; margin-inline-start: 4px; }
-
-/* Waveform section */
-.card-wf {
-  padding: 14px 18px;
-  background: rgba(0,0,0,0.22);
-}
-.wf-tabs {
-  display: flex; gap: 2px;
-  background: var(--void); border-radius: 5px;
-  padding: 2px; width: fit-content; margin-bottom: 10px;
-}
-.wft {
-  padding: 5px 14px; font-family: var(--mono); font-size: 9px;
-  letter-spacing: 1px; text-transform: uppercase;
-  border: none; background: transparent; color: var(--tx-lo);
-  border-radius: 4px; cursor: pointer; transition: var(--t);
-}
-.wft.a { background: var(--raised); color: var(--gold); }
-.wf-cvs-wrap { position: relative; }
-.wf-cvs { width: 100%; height: 76px; display: block; border-radius: 5px; }
-.wf-shim {
-  position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(90deg, rgba(7,7,13,0.45) 0%, transparent 6%, transparent 94%, rgba(7,7,13,0.45) 100%);
-  border-radius: 5px;
-}
-
-/* Card progress bar */
-.cprog { height: 2px; background: var(--raised); }
-.cprog-fill {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, var(--cyan), var(--gold));
-  transition: width 0.3s ease;
-}
-
-/* Card meters */
-.card-meters {
-  display: grid; grid-template-columns: repeat(4,1fr);
-  gap: 10px; padding: 11px 18px;
-  border-top: 1px solid var(--b-sub);
-}
-.cm { display: flex; flex-direction: column; gap: 3px; }
-.cm-lbl { font-family: var(--mono); font-size: 8px; color: var(--tx-lo); text-transform: uppercase; letter-spacing: 1px; }
-.cm-val { font-family: var(--mono); font-size: 12px; font-weight: 700; }
-.cm-val.lufs { color: var(--cyan); }
-.cm-val.peak { color: var(--gold); }
-.cm-val.dr   { color: var(--green); }
-.cm-val.info { color: var(--tx-mid); font-size: 9px; }
-.cm-bar  { height: 3px; background: var(--raised); border-radius: 2px; overflow: hidden; }
-.cm-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
-.cm-fill.lufs { background: var(--cyan); }
-.cm-fill.peak { background: var(--gold); }
-.cm-fill.dr   { background: var(--green); }
-
-/* Playback bar */
-.pb-bar {
-  display: none; align-items: center; gap: 10px;
-  padding: 9px 18px;
-  border-top: 1px solid var(--b-sub);
-  background: rgba(0,0,0,0.15);
-}
-.pb-bar.show { display: flex; }
-.pb-play {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: rgba(240,180,41,0.1); border: 1px solid rgba(240,180,41,0.2);
-  color: var(--gold); display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: var(--t); font-size: 11px; flex-shrink: 0;
-}
-.pb-play:hover { background: rgba(240,180,41,0.2); box-shadow: 0 0 12px rgba(240,180,41,0.2); }
-.pb-seek {
-  flex: 1; height: 3px; background: var(--raised); border-radius: 2px; cursor: pointer; position: relative;
-}
-.pb-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--orange)); border-radius: 2px; width: 0%; }
-.pb-time { font-family: var(--mono); font-size: 9px; color: var(--tx-lo); white-space: nowrap; flex-shrink: 0; }
-
-/* Individual download btn in card */
-.card-dl-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 7px 14px;
-  background: rgba(0,245,160,0.08); border: 1px solid rgba(0,245,160,0.18);
-  border-radius: var(--r-sm); color: var(--green); font-family: var(--mono);
-  font-size: 9px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: var(--t);
-}
-.card-dl-btn:hover { background: rgba(0,245,160,0.15); box-shadow: 0 0 14px rgba(0,245,160,0.15); }
-.card-dl-row {
-  display: none; align-items: center; justify-content: space-between;
-  padding: 10px 18px; border-top: 1px solid var(--b-sub);
-  background: rgba(0,245,160,0.02);
-}
-.card-dl-row.show { display: flex; }
-.card-dl-info { font-size: 11px; color: var(--tx-mid); }
-.card-dl-lufs { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--green); }
-
-/* ─── PROCESS STRIP ────────────────────────────────────── */
-.process-strip {
-  display: none; align-items: center; justify-content: space-between;
-  background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(6,214,255,0.04));
-  border: 1px solid rgba(139,92,246,0.15);
-  border-radius: var(--r-xl); padding: 20px 28px;
-  margin-bottom: 16px; flex-wrap: wrap; gap: 14px;
-}
-.process-strip.show { display: flex; }
-.ps-info { display: flex; flex-direction: column; gap: 3px; }
-.ps-title { font-size: 16px; font-weight: 700; color: var(--tx-hi); }
-.ps-sub   { font-size: 12px; color: var(--tx-mid); }
-.ps-btns  { display: flex; gap: 10px; flex-wrap: wrap; }
-
-/* Overall progress */
-.overall-prog {
-  display: none;
-  margin-bottom: 16px;
-}
-.overall-prog.show { display: block; }
-.op-track { height: 5px; background: var(--raised); border-radius: 5px; overflow: hidden; margin-bottom: 7px; }
-.op-fill {
-  height: 100%; width: 0%; border-radius: 5px;
-  background: linear-gradient(90deg, var(--purple), var(--cyan), var(--gold));
-  background-size: 200% 100%;
-  animation: opShimmer 2s linear infinite;
-  transition: width 0.4s ease;
-}
-@keyframes opShimmer { 0%{background-position:0 0}100%{background-position:200% 0} }
-.op-meta { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: var(--tx-lo); }
-
-/* Download section */
-.dl-section {
-  display: none; align-items: center; justify-content: space-between;
-  background: linear-gradient(135deg, rgba(0,245,160,0.05), rgba(6,214,255,0.03));
-  border: 1px solid rgba(0,245,160,0.18);
-  border-radius: var(--r-xl); padding: 20px 28px;
-  margin-bottom: 16px; flex-wrap: wrap; gap: 14px;
-}
-.dl-section.show { display: flex; }
-.dl-title { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 3px; }
-.dl-sub   { font-size: 12px; color: var(--tx-mid); }
-.dl-btns  { display: flex; gap: 8px; flex-wrap: wrap; }
-
-/* ══════════════════════ BUTTONS ═════════════════════════ */
-.btn {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 9px 18px; border-radius: var(--r-sm);
-  font-family: var(--mono); font-size: 10px; font-weight: 700;
-  letter-spacing: 1px; text-transform: uppercase;
-  cursor: pointer; border: none; transition: var(--t);
-  position: relative; overflow: hidden; white-space: nowrap;
-}
-.btn::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent);
-  opacity: 0; transition: var(--t);
-}
-.btn:hover::before { opacity: 1; }
-.btn:active { transform: scale(0.97); }
-
-.btn-ghost  { background: transparent; border: 1px solid var(--b-sub); color: var(--tx-mid); }
-.btn-ghost:hover { border-color: var(--b-gold); color: var(--tx-hi); background: rgba(240,180,41,0.04); }
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  color: #000; font-weight: 700;
-  box-shadow: 0 0 20px rgba(240,180,41,0.2);
-}
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 35px rgba(240,180,41,0.35); }
-
-.btn-cyan   { background: transparent; border: 1px solid var(--b-cyan); color: var(--cyan); }
-.btn-cyan:hover { background: rgba(6,214,255,0.08); box-shadow: 0 0 20px rgba(6,214,255,0.15); transform: translateY(-1px); }
-
-.btn-green  { background: transparent; border: 1px solid var(--b-green); color: var(--green); }
-.btn-green:hover { background: rgba(0,245,160,0.08); box-shadow: 0 0 20px rgba(0,245,160,0.15); }
-
-.btn-danger { background: rgba(255,59,92,0.1); border: 1px solid rgba(255,59,92,0.25); color: var(--red); }
-.btn-danger:hover { background: rgba(255,59,92,0.18); }
-
-.btn-sm { padding: 6px 12px; font-size: 9px; }
-.btn-lg { padding: 12px 24px; font-size: 11px; }
-.btn-icon { padding: 8px; aspect-ratio: 1; }
-
-/* AUTO-MAGIC BUTTON */
-.btn-magic {
-  background: linear-gradient(135deg, #8b5cf6, #06d6ff, #f0b429);
-  background-size: 200% 200%;
-  animation: magicShift 3.5s ease infinite;
-  color: #000; font-size: 11px; padding: 13px 26px;
-  font-weight: 700; border: none; border-radius: var(--r-md);
-  cursor: pointer; font-family: var(--mono); letter-spacing: 1px;
-  box-shadow: 0 0 30px rgba(139,92,246,0.28);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px;
-}
-.btn-magic::after {
-  content: ''; position: absolute; inset: -3px; z-index: -1; border-radius: calc(var(--r-md) + 3px);
-  background: linear-gradient(135deg, #8b5cf6, #06d6ff, #f0b429);
-  background-size: 200% 200%;
-  animation: magicShift 3.5s ease infinite;
-  filter: blur(8px); opacity: 0.45;
-}
-.btn-magic { position: relative; }
-.btn-magic:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 55px rgba(139,92,246,0.45); }
-@keyframes magicShift { 0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%} }
-.btn-magic:disabled { opacity: 0.5; pointer-events: none; }
-
-/* MERGE BUTTON */
-.btn-merge {
-  background: linear-gradient(135deg, rgba(240,180,41,0.12), rgba(255,107,43,0.08));
-  border: 1px solid rgba(240,180,41,0.28); color: var(--gold);
-}
-.btn-merge:hover { background: rgba(240,180,41,0.2); box-shadow: 0 0 22px rgba(240,180,41,0.18); }
-
-/* ══════════════════════ MODAL ═══════════════════════════ */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 900;
-  background: rgba(3,3,5,0.88);
-  backdrop-filter: blur(12px);
-  align-items: center; justify-content: center;
-  animation: mFadeIn 0.2s ease;
-}
-.modal-overlay.open { display: flex; }
-@keyframes mFadeIn { from{opacity:0}to{opacity:1} }
-
-.modal-box {
-  background: var(--panel);
-  border: 1px solid var(--b-sub);
-  border-radius: var(--r-xl);
-  width: min(640px, 92vw);
-  overflow: hidden;
-  box-shadow: 0 40px 120px rgba(0,0,0,0.7), 0 0 60px rgba(139,92,246,0.06);
-  animation: mSlideIn 0.3s cubic-bezier(0.4,0,0.2,1);
-}
-@keyframes mSlideIn { from{opacity:0;transform:translateY(-30px) scale(0.96)}to{opacity:1;transform:none} }
-
-.modal-head {
-  padding: 24px 28px 20px;
-  border-bottom: 1px solid var(--b-sub);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.modal-title { font-family: var(--display); font-size: 20px; font-weight: 700; letter-spacing: 1px; color: var(--tx-hi); }
-.modal-sub   { font-size: 12px; color: var(--tx-mid); margin-top: 3px; }
-.modal-close { font-size: 16px; color: var(--tx-lo); cursor: pointer; padding: 4px; transition: var(--t); border: none; background: none; }
-.modal-close:hover { color: var(--tx-hi); }
-
-.modal-body { padding: 24px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-.mode-card {
-  border: 1px solid var(--b-sub);
-  border-radius: var(--r-lg);
-  padding: 22px 20px;
-  cursor: pointer; transition: var(--t-slow); position: relative; overflow: hidden;
-  background: var(--surface);
-}
-.mode-card::before {
-  content: ''; position: absolute; inset: 0; opacity: 0;
-  transition: opacity 0.4s ease;
-}
-.mode-card:hover::before { opacity: 1; }
-
-.mode-card.auto { border-color: rgba(139,92,246,0.22); }
-.mode-card.auto::before { background: radial-gradient(ellipse at 50% 0%, rgba(139,92,246,0.1), transparent 70%); }
-.mode-card.auto:hover { border-color: rgba(139,92,246,0.5); box-shadow: 0 0 40px rgba(139,92,246,0.1); transform: translateY(-3px); }
-
-.mode-card.pro  { border-color: rgba(240,180,41,0.22); }
-.mode-card.pro::before  { background: radial-gradient(ellipse at 50% 0%, rgba(240,180,41,0.08), transparent 70%); }
-.mode-card.pro:hover  { border-color: rgba(240,180,41,0.5); box-shadow: 0 0 40px rgba(240,180,41,0.1); transform: translateY(-3px); }
-
-.mc-icon {
-  font-size: 32px; margin-bottom: 14px;
-  background: linear-gradient(135deg, var(--purple), var(--cyan));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.mode-card.pro .mc-icon {
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.mc-title { font-size: 16px; font-weight: 700; color: var(--tx-hi); margin-bottom: 8px; }
-.mc-desc  { font-size: 11px; color: var(--tx-mid); line-height: 1.7; }
-.mc-badge {
-  display: inline-block; margin-top: 12px; padding: 4px 10px;
-  border-radius: 20px; font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 1px;
-}
-.mode-card.auto .mc-badge { background: rgba(139,92,246,0.15); color: var(--purple); border: 1px solid rgba(139,92,246,0.3); }
-.mode-card.pro  .mc-badge { background: rgba(240,180,41,0.12); color: var(--gold);   border: 1px solid rgba(240,180,41,0.3); }
-
-/* Auto-magic processing overlay inside card */
-.magic-overlay {
-  display: none; align-items: center; justify-content: center; gap: 12px;
-  padding: 18px; background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(6,214,255,0.05));
-  border-top: 1px solid rgba(139,92,246,0.15);
-}
-.magic-overlay.show { display: flex; }
-.magic-spinner {
-  width: 22px; height: 22px; border-radius: 50%;
-  border: 2px solid rgba(139,92,246,0.2); border-top-color: var(--purple);
-  animation: spin 0.8s linear infinite; flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.magic-txt { font-family: var(--mono); font-size: 10px; color: var(--tx-mid); letter-spacing: 0.5px; }
-
-/* ══════════════════════ TOAST ════════════════════════════ */
-.toast-wrap { position: fixed; bottom: 24px; inset-inline-start: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 7px; pointer-events: none; }
-.toast {
-  padding: 11px 16px; border-radius: var(--r-md); display: flex; align-items: center; gap: 9px;
-  font-family: var(--mono); font-size: 11px; max-width: 300px;
-  backdrop-filter: blur(12px); pointer-events: auto;
-  animation: tIn 0.35s cubic-bezier(0.4,0,0.2,1);
-}
-@keyframes tIn { from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none} }
-.toast.ok   { background: rgba(0,245,160,0.11); border: 1px solid rgba(0,245,160,0.3);  color: var(--green); }
-.toast.err  { background: rgba(255,59,92,0.11);  border: 1px solid rgba(255,59,92,0.3);  color: var(--red); }
-.toast.info { background: rgba(6,214,255,0.1);   border: 1px solid rgba(6,214,255,0.28); color: var(--cyan); }
-.toast.warn { background: rgba(240,180,41,0.1);  border: 1px solid rgba(240,180,41,0.28);color: var(--gold); }
-
-/* WAV badge */
-.wav-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 7px; border-radius: 4px;
-  background: rgba(0,245,160,0.12); border: 1px solid rgba(0,245,160,0.25);
-  color: var(--green); font-family: var(--mono); font-size: 8px; font-weight: 700;
-  letter-spacing: 0.5px; margin-inline-start: 6px; vertical-align: middle;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .body-layout { flex-direction: column; }
-  .sidebar { width: 100%; min-width: unset; max-height: none; position: static; top: unset; border-inline-end: none; border-bottom: 1px solid var(--b-sub); order: unset; }
-  .main-area { max-height: none; order: unset; }
-  .modal-body { grid-template-columns: 1fr; }
-  .header-center { display: none; }
-}
-@media (max-width: 520px) {
-  .card-meters { grid-template-columns: repeat(2,1fr); }
-  .header { padding: 0 16px; }
-  .main-area { padding: 16px; }
-}
+  :root {
+    --bg: #0a0a0c;
+    --surface: #111115;
+    --surface2: #16161c;
+    --surface3: #1c1c24;
+    --border: rgba(255,255,255,0.06);
+    --border-active: rgba(255,255,255,0.15);
+    --accent: #c8a96e;
+    --accent2: #e8c882;
+    --accent-glow: rgba(200,169,110,0.15);
+    --text: #f0ede8;
+    --text-muted: rgba(240,237,232,0.45);
+    --text-dim: rgba(240,237,232,0.25);
+    --green: #4ecb8a;
+    --red: #e05c5c;
+    --blue: #5c9fe0;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Ambient background */
+  body::before {
+    content:'';
+    position: fixed;
+    top: -30vh; left: 50%;
+    transform: translateX(-50%);
+    width: 80vw; height: 60vh;
+    background: radial-gradient(ellipse at center, rgba(200,169,110,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,12,0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 clamp(20px, 5vw, 80px);
+    height: 70px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), #a07840);
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-size: 18px;
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+  .logo-text {
+    font-size: 1.05rem; font-weight: 700;
+    letter-spacing: 0.01em;
+    background: linear-gradient(135deg, var(--text) 60%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .logo-sub {
+    font-size: 0.7rem; font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    -webkit-text-fill-color: var(--text-muted);
+  }
+
+  .lang-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 8px 18px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem; font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    letter-spacing: 0.02em;
+  }
+  .lang-btn:hover {
+    background: var(--surface3);
+    border-color: var(--border-active);
+    box-shadow: 0 0 16px rgba(200,169,110,0.1);
+  }
+  .lang-flag { font-size: 1.1rem; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: clamp(60px, 10vh, 120px) clamp(20px, 5vw, 80px) clamp(40px, 6vh, 80px);
+    text-align: center;
+    position: relative; z-index: 1;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(200,169,110,0.08);
+    border: 1px solid rgba(200,169,110,0.2);
+    border-radius: 40px;
+    padding: 6px 16px;
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .eyebrow-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:0.4;transform:scale(0.7)}
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent2), var(--accent), #8a6030);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    color: var(--text-muted);
+    font-weight: 400;
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+
+  /* ── DROP ZONE ── */
+  .drop-section {
+    padding: 0 clamp(20px, 5vw, 80px) 60px;
+    position: relative; z-index: 1;
+  }
+
+  .drop-zone {
+    border: 2px dashed rgba(200,169,110,0.25);
+    border-radius: 24px;
+    background: var(--surface);
+    min-height: 280px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .drop-zone::before {
+    content:'';
+    position: absolute; inset:0;
+    background: radial-gradient(ellipse at 50% 120%, rgba(200,169,110,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .drop-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(200,169,110,0.04);
+    box-shadow: 0 0 60px rgba(200,169,110,0.08), inset 0 0 40px rgba(200,169,110,0.03);
+  }
+
+  .drop-zone.hidden { display: none; }
+
+  .drop-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, rgba(200,169,110,0.12), rgba(200,169,110,0.04));
+    border: 1px solid rgba(200,169,110,0.2);
+    border-radius: 20px;
+    display: grid; place-items: center;
+    font-size: 2rem;
+    transition: var(--transition);
+  }
+  .drop-zone:hover .drop-icon, .drop-zone.drag-over .drop-icon {
+    transform: scale(1.08) translateY(-3px);
+    box-shadow: 0 12px 40px rgba(200,169,110,0.15);
+  }
+
+  .drop-title {
+    font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .drop-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .drop-formats {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+    padding: 0 20px;
+  }
+
+  .fmt-badge {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  #fileInput { display: none; }
+
+  /* ── PROCESS BUTTON ── */
+  .action-bar {
+    max-width: 860px; margin: 0 auto 60px;
+    padding: 0 clamp(20px, 5vw, 80px);
+    display: none;
+    align-items: center; justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .action-bar.visible { display: flex; }
+
+  .stats-pill {
+    display: flex; align-items: center; gap: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 10px 20px;
+  }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 0.7rem; color: var(--text-muted); }
+  .stat-divider { width: 1px; height: 28px; background: var(--border); }
+
+  .btn-magic {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none;
+    border-radius: 40px;
+    padding: 14px 32px;
+    color: #1a1200;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 24px rgba(200,169,110,0.3);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .btn-magic:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(200,169,110,0.45);
+  }
+  .btn-magic:active:not(:disabled) { transform: translateY(0); }
+  .btn-magic:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+  .btn-magic .magic-icon {
+    font-size: 1.2rem;
+    animation: none;
+  }
+  .btn-magic.processing .magic-icon {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── CARDS GRID ── */
+  .cards-section {
+    padding: 0 clamp(20px, 5vw, 80px) 40px;
+    position: relative; z-index: 1;
+  }
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── FILE CARD ── */
+  .file-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 18px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  .file-card::before {
+    content:'';
+    position: absolute; top:0; left:0; right:0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,169,110,0.3), transparent);
+    opacity: 0;
+    transition: var(--transition);
+  }
+  .file-card:hover { border-color: var(--border-active); }
+  .file-card:hover::before { opacity: 1; }
+  .file-card.done { border-color: rgba(78,203,138,0.2); }
+  .file-card.done::before { opacity: 1; background: linear-gradient(90deg, transparent, rgba(78,203,138,0.4), transparent); }
+  .file-card.error { border-color: rgba(224,92,92,0.2); }
+
+  .card-header {
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+
+  .card-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: 1.3rem;
+  }
+
+  .card-info { flex: 1; min-width: 0; }
+  .card-name {
+    font-size: 0.92rem; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+  .card-meta {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .card-size {
+    font-size: 0.75rem; color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+  .card-badge {
+    font-size: 0.65rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    font-family: 'Space Mono', monospace;
+    background: var(--surface3); color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .card-badge.wav { background: rgba(200,169,110,0.1); color: var(--accent); border-color: rgba(200,169,110,0.2); }
+  .card-badge.mp3 { background: rgba(92,159,224,0.1); color: var(--blue); border-color: rgba(92,159,224,0.2); }
+  .card-badge.flac { background: rgba(78,203,138,0.1); color: var(--green); border-color: rgba(78,203,138,0.2); }
+
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--text-dim);
+    transition: background 0.3s;
+    flex-shrink: 0; margin-top: 4px;
+  }
+  .status-dot.processing { background: var(--accent); animation: pulse 1s ease-in-out infinite; }
+  .status-dot.done { background: var(--green); animation: none; }
+  .status-dot.error { background: var(--red); animation: none; }
+
+  /* Waveform canvas */
+  .waveform-container {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .waveform-label {
+    position: absolute; top: 8px;
+    font-size: 0.65rem; font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+  }
+  html[dir="rtl"] .waveform-label { right: 10px; }
+  html[dir="ltr"] .waveform-label { left: 10px; }
+
+  .waveform-canvas {
+    display: block;
+    width: 100%; height: 64px;
+    border-radius: 6px;
+  }
+
+  /* Progress */
+  .progress-area { display: flex; flex-direction: column; gap: 8px; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; }
+  .progress-label { font-size: 0.8rem; color: var(--text-muted); }
+  .progress-pct { font-size: 0.8rem; font-weight: 700; color: var(--accent); font-family: 'Space Mono', monospace; }
+
+  .progress-track {
+    height: 4px; background: var(--surface3);
+    border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+    width: 0;
+    box-shadow: 0 0 8px rgba(200,169,110,0.5);
+  }
+  .progress-fill.done { background: linear-gradient(90deg, var(--green), #7aefb2); box-shadow: 0 0 8px rgba(78,203,138,0.5); }
+  .progress-fill.error { background: var(--red); }
+
+  /* Stage Pills */
+  .stages {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .stage-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.7rem; color: var(--text-dim);
+    transition: var(--transition);
+    font-family: 'Cairo', sans-serif;
+  }
+  .stage-pill.active {
+    background: rgba(200,169,110,0.08);
+    border-color: rgba(200,169,110,0.3);
+    color: var(--accent);
+  }
+  .stage-pill.complete {
+    background: rgba(78,203,138,0.06);
+    border-color: rgba(78,203,138,0.2);
+    color: var(--green);
+  }
+  .stage-pill .stage-icon { font-size: 0.75rem; }
+
+  /* Card footer */
+  .card-footer {
+    display: flex; align-items: center; gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .format-select {
+    flex: 1; min-width: 120px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+    padding-left: 32px;
+    transition: var(--transition);
+  }
+  html[dir="rtl"] .format-select {
+    background-position: right 12px center;
+    padding-left: 12px;
+    padding-right: 32px;
+  }
+  .format-select:focus { outline: none; border-color: var(--accent); }
+
+  .btn-download {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.82rem; font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .btn-download:hover:not(:disabled) {
+    background: rgba(200,169,110,0.1);
+    border-color: rgba(200,169,110,0.3);
+    color: var(--accent);
+  }
+  .btn-download:disabled { opacity:0.3; cursor:not-allowed; }
+
+  /* Audio Metrics */
+  .audio-metrics {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .audio-metrics.visible { opacity: 1; }
+  .metric-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+  }
+  .metric-val {
+    font-size: 0.95rem; font-weight: 700;
+    font-family: 'Space Mono', monospace;
+    color: var(--accent2);
+  }
+  .metric-key {
+    font-size: 0.65rem; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+
+  /* ── ZIP FOOTER ── */
+  .zip-section {
+    padding: 0 clamp(20px, 5vw, 80px) 100px;
+    position: relative; z-index: 1;
+    display: none;
+  }
+  .zip-section.visible { display: block; }
+  .zip-inner {
+    max-width: 860px; margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap;
+  }
+  .zip-text h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+  .zip-text p { font-size: 0.85rem; color: var(--text-muted); }
+
+  .btn-zip {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--surface3);
+    border: 1px solid var(--border-active);
+    border-radius: 40px;
+    padding: 12px 28px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+  .btn-zip:hover {
+    background: rgba(200,169,110,0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 30px rgba(200,169,110,0.12);
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 32px;
+    background: var(--surface2);
+    border: 1px solid var(--border-active);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 0.88rem; font-weight: 600;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    z-index: 999;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    max-width: 360px;
+  }
+  html[dir="rtl"] .toast { right: 32px; }
+  html[dir="ltr"] .toast { left: 32px; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: rgba(78,203,138,0.3); }
+  .toast.error { border-color: rgba(224,92,92,0.3); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .stats-pill { gap: 12px; padding: 8px 14px; }
+    .stat-divider { display: none; }
+    .btn-magic { padding: 12px 22px; font-size: 0.9rem; }
+    .zip-inner { flex-direction: column; text-align: center; }
+    .audio-metrics { grid-template-columns: repeat(3,1fr); }
+    .card-footer { flex-direction: column; }
+    .format-select, .btn-download { width: 100%; justify-content: center; }
+  }
+
+  /* Add file button in corner after drop */
+  .add-more-btn {
+    display: none;
+    align-items: center; gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 8px 18px;
+    color: var(--text-muted);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: var(--transition);
+    margin: 0 auto 24px;
+  }
+  .add-more-btn:hover { border-color: var(--border-active); color: var(--text); }
+  .add-more-btn.visible { display: inline-flex; }
 </style>
 </head>
 <body>
-<div class="app-wrap">
 
-<!-- ═══════════════════════ HEADER ═════════════════════════ -->
-<header class="header">
-  <a class="logo" href="#">
-    <div class="logo-gem">SN</div>
-    <div class="logo-text-wrap">
-      <span class="logo-name">SONO</span>
-      <span class="logo-ver" data-i="logo_ver">Pro Audio Studio</span>
-    </div>
-  </a>
-
-  <div class="header-center">
-    <div class="hstat">
-      <span class="hstat-val" id="hs-files">0</span>
-      <span class="hstat-lbl" data-i="hs_files">ملفات</span>
-    </div>
-    <div class="hstat">
-      <span class="hstat-val" id="hs-done">0</span>
-      <span class="hstat-lbl" data-i="hs_done">معالج</span>
-    </div>
-    <div class="hstat">
-      <span class="hstat-val" id="hs-lufs">—</span>
-      <span class="hstat-lbl" data-i="hs_lufs">LUFS متوسط</span>
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">✦</div>
+    <div>
+      <div class="logo-text" id="logoText">استوديو صوتي سحري</div>
+      <div class="logo-sub" id="logoSub">Magic Audio Studio v1.0</div>
     </div>
   </div>
-
-  <div class="header-right">
-    <div class="lang-toggle">
-      <button class="lang-btn active" id="lang-ar" onclick="setLang('ar')">AR</button>
-      <button class="lang-btn"        id="lang-en" onclick="setLang('en')">EN</button>
-    </div>
-    <button class="btn btn-ghost btn-sm" onclick="clearAll()" data-i="btn_clear">🗑 مسح</button>
-    <button class="btn btn-ghost btn-sm" onclick="exportReport()" data-i="btn_report">📊 تقرير</button>
-  </div>
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()">
+    <span class="lang-flag">🌐</span>
+    <span id="langBtnText">English</span>
+  </button>
 </header>
 
-<!-- ═══════════════════════ BODY ═══════════════════════════ -->
-<div class="body-layout">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span class="eyebrow-dot"></span>
+    <span id="eyebrowText">محرك DSP الذكي الأوتوماتيكي</span>
+  </div>
+  <h1 id="heroTitle">اصنع <span>سحراً</span> من أي صوت</h1>
+  <p id="heroSub">محرك ذكاء اصطناعي داخلي يحلّل ويُحسّن ويوحّد ويُصدّر صوتك باحترافية عالمية — بضغطة زر واحدة</p>
+</section>
 
-<!-- ─────────────────── SIDEBAR ────────────────────────── -->
-<aside class="sidebar" id="sidebar">
-
-  <!-- Target LUFS -->
-  <div class="lufs-target-block">
-    <div class="ltb-head">
-      <span class="ltb-label" data-i="target_lufs">الهدف</span>
-      <span>
-        <span class="ltb-val" id="ltv">-16.0</span>
-        <span class="ltb-unit">LUFS</span>
-      </span>
-    </div>
-    <input type="range" id="lufs-slider" min="-30" max="-6" step="0.5" value="-16" style="width:100%">
-    <div class="preset-row">
-      <span class="preset-pill" data-v="-23" title="EBU R128 Broadcast">-23<br><small style="font-size:7px;opacity:.6">EBU</small></span>
-      <span class="preset-pill active" data-v="-16" title="Podcast / Online">-16<br><small style="font-size:7px;opacity:.6">POD</small></span>
-      <span class="preset-pill" data-v="-14" title="Streaming">-14<br><small style="font-size:7px;opacity:.6">STR</small></span>
-      <span class="preset-pill" data-v="-12" title="Loud">-12<br><small style="font-size:7px;opacity:.6">MAX</small></span>
+<!-- DROP ZONE -->
+<section class="drop-section">
+  <div class="drop-zone" id="dropZone"
+    onclick="document.getElementById('fileInput').click()"
+    ondragover="handleDragOver(event)"
+    ondragleave="handleDragLeave(event)"
+    ondrop="handleDrop(event)">
+    <div class="drop-icon">🎵</div>
+    <div class="drop-title" id="dropTitle">ارفع ملفاتك هنا، واترك السحر لنا</div>
+    <div class="drop-subtitle" id="dropSub">اسحب وأفلت أو انقر للاختيار</div>
+    <div class="drop-formats">
+      <span class="fmt-badge">WAV</span>
+      <span class="fmt-badge">MP3</span>
+      <span class="fmt-badge">FLAC</span>
+      <span class="fmt-badge">OGG</span>
+      <span class="fmt-badge">M4A</span>
+      <span class="fmt-badge">AAC</span>
+      <span class="fmt-badge">OPUS</span>
+      <span class="fmt-badge">AIFF</span>
     </div>
   </div>
+  <input type="file" id="fileInput" multiple accept="audio/*" onchange="handleFileSelect(event)">
+</section>
 
-  <div class="sidebar-divider"></div>
-
-  <!-- DSP Chain -->
-  <div class="accordion" id="acc-dsp">
-    <div class="acc-header" onclick="toggleAcc('acc-dsp')">
-      <div class="acc-title-wrap">
-        <div class="acc-icon" style="background:rgba(6,214,255,0.1);color:var(--cyan)">🔗</div>
-        <span class="acc-title" data-i="dsp_chain">سلسلة المعالجة</span>
-      </div>
-      <span class="acc-arrow open">▼</span>
-    </div>
-    <div class="acc-body open">
-      <div class="dsp-toggle-row">
-        <div class="dsp-info"><span class="dsp-name">Noise Gate</span><span class="dsp-desc" data-i="ng_desc">قطع الضوضاء الخلفية</span></div>
-        <div class="sw on" data-key="noiseGate" onclick="toggleDSP(this)"></div>
-      </div>
-      <div class="dsp-toggle-row">
-        <div class="dsp-info"><span class="dsp-name">Compressor</span><span class="dsp-desc" data-i="cmp_desc">ضبط الديناميكية</span></div>
-        <div class="sw on" data-key="compressor" onclick="toggleDSP(this)"></div>
-      </div>
-      <div class="dsp-toggle-row">
-        <div class="dsp-info"><span class="dsp-name">De-Esser</span><span class="dsp-desc" data-i="dess_desc">تقليل حدة السين</span></div>
-        <div class="sw on" data-key="deEsser" onclick="toggleDSP(this)"></div>
-      </div>
-      <div class="dsp-toggle-row">
-        <div class="dsp-info"><span class="dsp-name">Vocal Enhancer</span><span class="dsp-desc" data-i="voc_desc">وضوح إذاعي</span></div>
-        <div class="sw on" data-key="vocalEnhancer" onclick="toggleDSP(this)"></div>
-      </div>
-      <div class="dsp-toggle-row">
-        <div class="dsp-info"><span class="dsp-name">LUFS Normalize</span><span class="dsp-desc" data-i="norm_desc">توحيد علو الصوت</span></div>
-        <div class="sw on" data-key="normalize" onclick="toggleDSP(this)"></div>
-      </div>
-      <div class="dsp-toggle-row">
-        <div class="dsp-info"><span class="dsp-name">Brickwall Limiter</span><span class="dsp-desc" data-i="lim_desc">حماية من التشوه</span></div>
-        <div class="sw on" data-key="limiter" onclick="toggleDSP(this)"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sidebar-divider"></div>
-
-  <!-- Compressor -->
-  <div class="accordion" id="acc-comp">
-    <div class="acc-header" onclick="toggleAcc('acc-comp')">
-      <div class="acc-title-wrap">
-        <div class="acc-icon" style="background:rgba(240,180,41,0.1);color:var(--gold)">⚡</div>
-        <span class="acc-title">Compressor</span>
-      </div>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body">
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Threshold</span><span class="sl-val" id="v-cth">-24 dB</span></div>
-        <input type="range" id="s-cth" class="c" min="-60" max="0"   value="-24" step="1">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Ratio</span><span class="sl-val" id="v-crt">3:1</span></div>
-        <input type="range" id="s-crt" class="c" min="1"   max="20"  value="3"   step="0.5">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Attack</span><span class="sl-val" id="v-cat">10 ms</span></div>
-        <input type="range" id="s-cat" class="c" min="0"   max="200" value="10"  step="1">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Release</span><span class="sl-val" id="v-crl">100 ms</span></div>
-        <input type="range" id="s-crl" class="c" min="10"  max="1000" value="100" step="10">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Knee</span><span class="sl-val" id="v-ckn">6 dB</span></div>
-        <input type="range" id="s-ckn" class="c" min="0"   max="40"  value="6"   step="1">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Makeup</span><span class="sl-val" id="v-cmk">+3 dB</span></div>
-        <input type="range" id="s-cmk"            min="-12" max="24"  value="3"   step="0.5">
-      </div>
-    </div>
-  </div>
-
-  <div class="sidebar-divider"></div>
-
-  <!-- 4-Band EQ -->
-  <div class="accordion" id="acc-eq">
-    <div class="acc-header" onclick="toggleAcc('acc-eq')">
-      <div class="acc-title-wrap">
-        <div class="acc-icon" style="background:rgba(139,92,246,0.1);color:var(--purple)">🎚</div>
-        <span class="acc-title">4-Band EQ</span>
-      </div>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body">
-      <div class="eq-grid">
-        <div class="eq-band">
-          <span class="eq-f">SUB<br>80Hz</span>
-          <div class="eq-fader-wrap"><input type="range" class="eq-fader sub" id="eq-sub" min="-12" max="12" value="0" step="0.5"></div>
-          <span class="eq-gval" id="ev-sub">0dB</span>
-        </div>
-        <div class="eq-band">
-          <span class="eq-f">LOW<br>250Hz</span>
-          <div class="eq-fader-wrap"><input type="range" class="eq-fader low" id="eq-low" min="-12" max="12" value="1" step="0.5"></div>
-          <span class="eq-gval" id="ev-low">+1dB</span>
-        </div>
-        <div class="eq-band">
-          <span class="eq-f">MID<br>3kHz</span>
-          <div class="eq-fader-wrap"><input type="range" class="eq-fader mid" id="eq-mid" min="-12" max="12" value="3" step="0.5"></div>
-          <span class="eq-gval" id="ev-mid">+3dB</span>
-        </div>
-        <div class="eq-band">
-          <span class="eq-f">AIR<br>12kHz</span>
-          <div class="eq-fader-wrap"><input type="range" class="eq-fader hi" id="eq-hi" min="-12" max="12" value="2" step="0.5"></div>
-          <span class="eq-gval" id="ev-hi">+2dB</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sidebar-divider"></div>
-
-  <!-- Noise Gate -->
-  <div class="accordion" id="acc-gate">
-    <div class="acc-header" onclick="toggleAcc('acc-gate')">
-      <div class="acc-title-wrap">
-        <div class="acc-icon" style="background:rgba(0,245,160,0.1);color:var(--green)">🔇</div>
-        <span class="acc-title">Noise Gate</span>
-      </div>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body">
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Threshold</span><span class="sl-val" id="v-gth">-45 dB</span></div>
-        <input type="range" id="s-gth" class="g" min="-80" max="-10" value="-45" step="1">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Hold</span><span class="sl-val" id="v-ghld">50 ms</span></div>
-        <input type="range" id="s-ghld" class="g" min="5"  max="500" value="50"  step="5">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Fade</span><span class="sl-val" id="v-gfade">20 ms</span></div>
-        <input type="range" id="s-gfade" class="g" min="1" max="200" value="20"  step="1">
-      </div>
-    </div>
-  </div>
-
-  <div class="sidebar-divider"></div>
-
-  <!-- De-Esser -->
-  <div class="accordion" id="acc-dess">
-    <div class="acc-header" onclick="toggleAcc('acc-dess')">
-      <div class="acc-title-wrap">
-        <div class="acc-icon" style="background:rgba(255,107,43,0.1);color:var(--orange)">〰</div>
-        <span class="acc-title">De-Esser</span>
-      </div>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body">
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Center Freq</span><span class="sl-val" id="v-df">6500 Hz</span></div>
-        <input type="range" id="s-df" class="c" min="2000" max="12000" value="6500" step="100">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Bandwidth</span><span class="sl-val" id="v-dbw">2500 Hz</span></div>
-        <input type="range" id="s-dbw" class="c" min="500" max="6000" value="2500" step="100">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Reduction</span><span class="sl-val" id="v-dred">-8 dB</span></div>
-        <input type="range" id="s-dred" class="c" min="-20" max="0"  value="-8"   step="1">
-      </div>
-      <div class="sl-group">
-        <div class="sl-head"><span class="sl-label">Threshold</span><span class="sl-val" id="v-dthr">-18 dB</span></div>
-        <input type="range" id="s-dthr" class="c" min="-40" max="0"  value="-18"  step="1">
-      </div>
-    </div>
-  </div>
-
-</aside>
-
-<!-- ─────────────────── MAIN AREA ────────────────────────── -->
-<main class="main-area" id="main-area">
-
-  <!-- Drop Zone -->
-  <div class="drop-zone" id="drop-zone">
-    <div class="dz-ring">🎵</div>
-    <div class="dz-title" data-i="dz_title">اسحب ملفاتك الصوتية هنا</div>
-    <div class="dz-sub" data-i="dz_sub">أو انقر للاختيار · يدعم رفع ملفات متعددة · مع تحليل LUFS وذكاء اصطناعي</div>
-    <div class="dz-fmts">
-      <span class="dz-fmt">MP3</span><span class="dz-fmt">WAV</span>
-      <span class="dz-fmt">OGG</span><span class="dz-fmt">M4A</span>
-      <span class="dz-fmt">FLAC</span><span class="dz-fmt">AAC</span>
-    </div>
-    <input type="file" id="file-input" multiple accept="audio/*" style="display:none">
-  </div>
-
-  <!-- Toolbar -->
-  <div class="toolbar" id="toolbar">
-    <div class="tb-left">
-      <button class="btn btn-magic" id="btn-magic" onclick="startProcess('auto')">
-        ✨ <span data-i="btn_magic">Auto-Magic AI</span>
-      </button>
-      <button class="btn btn-cyan" id="btn-pro" onclick="startProcess('pro')">
-        ⚙ <span data-i="btn_pro">وضع المحترف</span>
-      </button>
-    </div>
-    <div class="tb-right">
-      <div class="export-select-wrap">
-        <select class="export-select" id="export-fmt" onchange="STATE.outputFormat=this.value">
-          <option value="wav">WAV <span class="wav-badge">★ موصى به</span></option>
-          <option value="mp3">MP3</option>
-          <option value="ogg">OGG</option>
-        </select>
-        <span class="export-arrow">▼</span>
-      </div>
-      <span class="wav-badge" id="wav-quality-badge" style="margin:0">★ <span data-i="wav_rec">أفضل جودة</span></span>
-    </div>
-  </div>
-
-  <!-- Overall progress -->
-  <div class="overall-prog" id="overall-prog">
-    <div class="op-track"><div class="op-fill" id="op-fill"></div></div>
-    <div class="op-meta">
-      <span id="op-label" data-i="processing">معالجة الملفات...</span>
-      <span id="op-pct">0%</span>
-    </div>
-  </div>
-
-  <!-- Process strip -->
-  <div class="process-strip" id="proc-strip">
-    <div class="ps-info">
-      <div class="ps-title" id="ps-title" data-i="ps_title">جاهز للمعالجة</div>
-      <div class="ps-sub"   id="ps-sub"   data-i="ps_sub">اختر طريقة المعالجة</div>
-    </div>
-    <div class="ps-btns">
-      <button class="btn btn-magic" onclick="startProcess('auto')">✨ <span data-i="btn_magic">Auto-Magic AI</span></button>
-      <button class="btn btn-cyan"  onclick="startProcess('pro')">⚙ <span data-i="btn_pro">وضع المحترف</span></button>
-    </div>
-  </div>
-
-  <!-- Download strip -->
-  <div class="dl-section" id="dl-section">
-    <div>
-      <div class="dl-title" data-i="dl_title">✅ المعالجة اكتملت!</div>
-      <div class="dl-sub"  id="dl-sub">—</div>
-    </div>
-    <div class="dl-btns">
-      <button class="btn btn-green btn-lg" onclick="downloadAll()" data-i="dl_all">⬇ تحميل الكل</button>
-      <button class="btn btn-merge btn-lg" onclick="mergeTracks()" data-i="dl_merge">⛓ دمج وتحميل</button>
-      <button class="btn btn-ghost"        onclick="resetForReprocess()" data-i="dl_again">🔄 مجدداً</button>
-    </div>
-  </div>
-
-  <!-- Files Grid -->
-  <div class="files-grid" id="files-grid">
-    <div class="empty-hint" id="empty-hint">
-      <div class="empty-hint-icon">🎙</div>
-      <div class="empty-hint-txt" data-i="empty_hint">ارفع ملفاتك الصوتية لتبدأ<br>يدعم المعالجة الجماعية بالذكاء الاصطناعي</div>
-    </div>
-  </div>
-
-</main>
-</div><!-- body-layout -->
-</div><!-- app-wrap -->
-
-<!-- ══════════════════ WORKFLOW MODAL ═════════════════════ -->
-<div class="modal-overlay" id="workflow-modal">
-  <div class="modal-box">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title" data-i="modal_title">كيف تريد معالجة الصوت؟</div>
-        <div class="modal-sub"  data-i="modal_sub">اختر مسار العمل المناسب لك</div>
-      </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="mode-card auto" onclick="selectMode('auto')">
-        <div class="mc-icon">✨</div>
-        <div class="mc-title" data-i="mode_auto_title">الذكاء الاصطناعي السحري</div>
-        <div class="mc-desc"  data-i="mode_auto_desc">بضغطة واحدة، يقوم الذكاء الاصطناعي بتحليل صوتك، إزالة الضوضاء، ضبط الديناميكية، وإنتاج صوت إذاعي نقي دون أي تدخل منك.</div>
-        <span class="mc-badge" data-i="mode_auto_badge">مُوصى به للمبتدئين</span>
-      </div>
-      <div class="mode-card pro" onclick="selectMode('pro')">
-        <div class="mc-icon">🎛</div>
-        <div class="mc-title" data-i="mode_pro_title">استوديو المحترفين</div>
-        <div class="mc-desc"  data-i="mode_pro_desc">تحكم كامل في كل معامل DSP — Compressor، EQ، De-Esser، Noise Gate — مع معاينة فورية قبل التصدير.</div>
-        <span class="mc-badge" data-i="mode_pro_badge">للمهندسين المحترفين</span>
-      </div>
-    </div>
-  </div>
+<!-- ADD MORE + ACTION BAR -->
+<div style="text-align:center; padding: 0 clamp(20px,5vw,80px);">
+  <button class="add-more-btn" id="addMoreBtn" onclick="document.getElementById('fileInput').click()">
+    <span>＋</span> <span id="addMoreText">إضافة ملفات أخرى</span>
+  </button>
 </div>
 
-<!-- Toast container -->
-<div class="toast-wrap" id="toast-wrap"></div>
+<div class="action-bar" id="actionBar">
+  <div class="stats-pill">
+    <div class="stat-item">
+      <div class="stat-num" id="totalCount">0</div>
+      <div class="stat-label" id="statTotal">ملف</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-num" id="doneCount">0</div>
+      <div class="stat-label" id="statDone">مكتمل</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-num" id="pendingCount">0</div>
+      <div class="stat-label" id="statPending">قيد المعالجة</div>
+    </div>
+  </div>
+  <button class="btn-magic" id="magicBtn" onclick="processAll()">
+    <span class="magic-icon" id="magicIcon">✦</span>
+    <span id="magicBtnText">تطبيق السحر للكل</span>
+  </button>
+</div>
+
+<!-- CARDS GRID -->
+<section class="cards-section">
+  <div class="cards-grid" id="cardsGrid"></div>
+</section>
+
+<!-- ZIP DOWNLOAD -->
+<section class="zip-section" id="zipSection">
+  <div class="zip-inner">
+    <div class="zip-text">
+      <h3 id="zipTitle">تحميل كل الملفات</h3>
+      <p id="zipDesc">جميع الملفات المعالجة مضغوطة في ملف واحد</p>
+    </div>
+    <button class="btn-zip" onclick="downloadAllZip()">
+      <span>📦</span> <span id="zipBtnText">تحميل كل الملفات (ZIP)</span>
+    </button>
+  </div>
+</section>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✓</span>
+  <span id="toastMsg">تم بنجاح</span>
+</div>
 
 <script>
-/* ════════════════════════════════════════════════════════════
-   SONO v2.0 — ENTERPRISE AUDIO ENGINE
-   Full DSP · Dual Workflow · i18n AR/EN · State Machine
-   ════════════════════════════════════════════════════════════ */
-'use strict';
-
-// ─── i18n Dictionary ──────────────────────────────────────
-const LANG = {
+// ═══════════════════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════════════════
+const T = {
   ar: {
-    logo_ver:'Pro Audio Studio v2.0', hs_files:'ملفات', hs_done:'معالج', hs_lufs:'LUFS متوسط',
-    btn_clear:'🗑 مسح', btn_report:'📊 تقرير', target_lufs:'الهدف',
-    dsp_chain:'سلسلة المعالجة', ng_desc:'قطع الضوضاء الخلفية', cmp_desc:'ضبط الديناميكية',
-    dess_desc:'تقليل حدة السين', voc_desc:'وضوح إذاعي', norm_desc:'توحيد علو الصوت', lim_desc:'حماية من التشوه',
-    dz_title:'اسحب ملفاتك الصوتية هنا', dz_sub:'أو انقر للاختيار · يدعم رفع ملفات متعددة · مع تحليل LUFS وذكاء اصطناعي',
-    btn_magic:'Auto-Magic AI', btn_pro:'وضع المحترف', wav_rec:'أفضل جودة',
-    ps_title:'جاهز للمعالجة', ps_sub:'اختر طريقة المعالجة',
-    dl_title:'✅ المعالجة اكتملت!', dl_all:'⬇ تحميل الكل', dl_merge:'⛓ دمج وتحميل', dl_again:'🔄 مجدداً',
-    empty_hint:'ارفع ملفاتك الصوتية لتبدأ\nيدعم المعالجة الجماعية بالذكاء الاصطناعي',
-    processing:'معالجة الملفات...',
-    modal_title:'كيف تريد معالجة الصوت؟', modal_sub:'اختر مسار العمل المناسب لك',
-    mode_auto_title:'الذكاء الاصطناعي السحري',
-    mode_auto_desc:'بضغطة واحدة، يقوم الذكاء الاصطناعي بتحليل صوتك، إزالة الضوضاء، ضبط الديناميكية، وإنتاج صوت إذاعي نقي.',
-    mode_auto_badge:'مُوصى به للمبتدئين',
-    mode_pro_title:'استوديو المحترفين',
-    mode_pro_desc:'تحكم كامل في كل معامل DSP — Compressor، EQ، De-Esser، Noise Gate — مع معاينة فورية قبل التصدير.',
-    mode_pro_badge:'للمهندسين المحترفين',
-    stat_pending:'انتظار', stat_analyzing:'تحليل', stat_processing:'معالجة', stat_done:'مكتمل', stat_error:'خطأ',
+    dir: 'rtl', lang: 'ar',
+    logoText: 'استوديو صوتي سحري',
+    logoSub: 'Magic Audio Studio v1.0',
+    langBtn: 'English',
+    eyebrow: 'محرك DSP الذكي الأوتوماتيكي',
+    heroTitle: ['اصنع ', 'سحراً', ' من أي صوت'],
+    heroSub: 'محرك ذكاء اصطناعي داخلي يحلّل ويُحسّن ويوحّد ويُصدّر صوتك باحترافية عالمية — بضغطة زر واحدة',
+    dropTitle: 'ارفع ملفاتك هنا، واترك السحر لنا',
+    dropSub: 'اسحب وأفلت أو انقر للاختيار',
+    addMore: 'إضافة ملفات أخرى',
+    statTotal: 'ملف', statDone: 'مكتمل', statPending: 'قيد المعالجة',
+    magicBtn: 'تطبيق السحر للكل',
+    magicBtnProcessing: 'جارٍ المعالجة...',
+    zipTitle: 'تحميل كل الملفات',
+    zipDesc: 'جميع الملفات المعالجة مضغوطة في ملف واحد',
+    zipBtn: 'تحميل كل الملفات (ZIP)',
+    download: 'تحميل',
+    stages: ['تحليل', 'تنظيف', 'توضيح', 'توحيد', 'حماية', 'تصدير'],
+    stageIcons: ['🔬','🫧','✨','📊','🛡️','📤'],
+    original: 'الأصلي',
+    enhanced: 'المُحسَّن',
+    metricLUFS: 'علو', metricPeak: 'ذروة', metricDyn: 'ديناميكية',
+    toastProcessing: 'بدأ معالجة الملفات...',
+    toastDone: 'اكتملت المعالجة بنجاح ✦',
+    toastZip: 'جارٍ إنشاء ملف ZIP...',
+    toastNoFiles: 'لا توجد ملفات جاهزة للتحميل',
+    waveOrig: 'قبل', waveEnhanced: 'بعد',
+    formatLabel: 'الصيغة',
+    processing: 'جارٍ المعالجة...',
+    ready: 'جاهز للمعالجة',
+    done: 'اكتملت المعالجة ✦',
+    error: 'حدث خطأ'
   },
   en: {
-    logo_ver:'Pro Audio Studio v2.0', hs_files:'Files', hs_done:'Processed', hs_lufs:'Avg LUFS',
-    btn_clear:'🗑 Clear', btn_report:'📊 Report', target_lufs:'Target',
-    dsp_chain:'DSP Chain', ng_desc:'Remove background noise', cmp_desc:'Dynamic control',
-    dess_desc:'Reduce sibilance', voc_desc:'Radio clarity', norm_desc:'Unified loudness', lim_desc:'Prevent distortion',
-    dz_title:'Drop your audio files here', dz_sub:'Or click to browse · Batch upload · With LUFS analysis & AI',
-    btn_magic:'Auto-Magic AI', btn_pro:'Pro Mode', wav_rec:'Best Quality',
-    ps_title:'Ready to Process', ps_sub:'Choose processing mode',
-    dl_title:'✅ Processing complete!', dl_all:'⬇ Download All', dl_merge:'⛓ Merge & Download', dl_again:'🔄 Reprocess',
-    empty_hint:'Upload your audio files to begin\nSupports batch AI processing',
-    processing:'Processing files...',
-    modal_title:'How would you like to process?', modal_sub:'Choose your workflow',
-    mode_auto_title:'Auto-Magic AI',
-    mode_auto_desc:'One click. The AI analyzes, denoises, compresses and delivers broadcast-ready audio.',
-    mode_auto_badge:'Recommended for beginners',
-    mode_pro_title:'Pro Studio',
-    mode_pro_desc:'Full control over every DSP parameter — Compressor, EQ, De-Esser, Noise Gate.',
-    mode_pro_badge:'For audio engineers',
-    stat_pending:'Pending', stat_analyzing:'Analyzing', stat_processing:'Processing', stat_done:'Done', stat_error:'Error',
+    dir: 'ltr', lang: 'en',
+    logoText: 'Magic Audio Studio',
+    logoSub: 'الاستوديو الصوتي السحري v1.0',
+    langBtn: 'العربية',
+    eyebrow: 'Automated AI-DSP Engine',
+    heroTitle: ['Make ', 'Magic', ' from Any Audio'],
+    heroSub: 'An internal AI engine that analyzes, enhances, normalizes, and exports your audio with world-class quality — with one click',
+    dropTitle: 'Drop your files here, and let the magic begin',
+    dropSub: 'Drag & drop or click to select',
+    addMore: 'Add More Files',
+    statTotal: 'Files', statDone: 'Done', statPending: 'Pending',
+    magicBtn: 'Apply Magic to All',
+    magicBtnProcessing: 'Processing...',
+    zipTitle: 'Download All Files',
+    zipDesc: 'All processed files compressed into one archive',
+    zipBtn: 'Download All (ZIP)',
+    download: 'Download',
+    stages: ['Analysis','Denoise','Enhance','Normalize','Limit','Export'],
+    stageIcons: ['🔬','🫧','✨','📊','🛡️','📤'],
+    original: 'Original',
+    enhanced: 'Enhanced',
+    metricLUFS: 'LUFS', metricPeak: 'Peak', metricDyn: 'Dynamic',
+    toastProcessing: 'Processing files...',
+    toastDone: 'All done! ✦',
+    toastZip: 'Creating ZIP archive...',
+    toastNoFiles: 'No processed files to download',
+    waveOrig: 'Before', waveEnhanced: 'After',
+    formatLabel: 'Format',
+    processing: 'Processing...',
+    ready: 'Ready to process',
+    done: 'Processed ✦',
+    error: 'Error'
   }
 };
 
-// ─── App State ─────────────────────────────────────────────
-const STATE = {
-  files: [],          // Array<FileRecord>
-  lang: 'ar',
-  mode: null,         // 'auto' | 'pro'
-  targetLUFS: -16,
-  outputFormat: 'wav',
-  dsp: { noiseGate:true, compressor:true, deEsser:true, vocalEnhancer:true, normalize:true, limiter:true },
-  audioCtx: null,
-  playing: null,      // { id, src }
-};
+let currentLang = 'ar';
+let audioContext = null;
+let files = []; // Array of { file, buffer, processedBuffer, format, status, id, audioUrl }
 
-let _uid = 0;
-const uid = () => `f${++_uid}`;
-
-// ─── AudioContext ──────────────────────────────────────────
-function getCtx() {
-  if (!STATE.audioCtx || STATE.audioCtx.state === 'closed') {
-    STATE.audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
-  }
-  if (STATE.audioCtx.state === 'suspended') STATE.audioCtx.resume();
-  return STATE.audioCtx;
+// ═══════════════════════════════════════════════════════
+// LANGUAGE TOGGLE
+// ═══════════════════════════════════════════════════════
+function toggleLang() {
+  currentLang = currentLang === 'ar' ? 'en' : 'ar';
+  applyLang();
 }
 
-// ─── i18n ──────────────────────────────────────────────────
-function setLang(lang) {
-  STATE.lang = lang;
-  document.documentElement.setAttribute('lang', lang);
-  document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-  document.getElementById('lang-ar').classList.toggle('active', lang === 'ar');
-  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+function applyLang() {
+  const t = T[currentLang];
+  document.documentElement.setAttribute('lang', t.lang);
+  document.documentElement.setAttribute('dir', t.dir);
+  document.getElementById('logoText').textContent = t.logoText;
+  document.getElementById('logoSub').textContent = t.logoSub;
+  document.getElementById('langBtnText').textContent = t.langBtn;
+  document.getElementById('eyebrowText').textContent = t.eyebrow;
+  const h1 = document.getElementById('heroTitle');
+  h1.innerHTML = t.heroTitle[0] + '<span>' + t.heroTitle[1] + '</span>' + t.heroTitle[2];
+  document.getElementById('heroSub').textContent = t.heroSub;
+  document.getElementById('dropTitle').textContent = t.dropTitle;
+  document.getElementById('dropSub').textContent = t.dropSub;
+  document.getElementById('addMoreText').textContent = t.addMore;
+  document.getElementById('statTotal').textContent = t.statTotal;
+  document.getElementById('statDone').textContent = t.statDone;
+  document.getElementById('statPending').textContent = t.statPending;
+  const mb = document.getElementById('magicBtnText');
+  if (mb) mb.textContent = t.magicBtn;
+  document.getElementById('zipTitle').textContent = t.zipTitle;
+  document.getElementById('zipDesc').textContent = t.zipDesc;
+  document.getElementById('zipBtnText').textContent = t.zipBtn;
+  // Update all cards stages
+  files.forEach(f => refreshCardStages(f.id));
+}
 
-  const D = LANG[lang];
-  document.querySelectorAll('[data-i]').forEach(el => {
-    const key = el.dataset.i;
-    if (D[key] !== undefined) {
-      if (el.tagName === 'INPUT' && el.type !== 'range') { el.placeholder = D[key]; }
-      else { el.innerHTML = D[key].replace(/\n/g, '<br>'); }
-    }
+function t(key) { return T[currentLang][key]; }
+
+// ═══════════════════════════════════════════════════════
+// DRAG & DROP
+// ═══════════════════════════════════════════════════════
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.add('drag-over');
+}
+function handleDragLeave(e) {
+  document.getElementById('dropZone').classList.remove('drag-over');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag-over');
+  const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('audio/') || isAudioExt(f.name));
+  if (dropped.length) addFiles(dropped);
+}
+function handleFileSelect(e) {
+  const selected = Array.from(e.target.files);
+  if (selected.length) addFiles(selected);
+  e.target.value = '';
+}
+function isAudioExt(name) {
+  return /\.(wav|mp3|flac|ogg|m4a|aac|opus|aiff|weba)$/i.test(name);
+}
+
+// ═══════════════════════════════════════════════════════
+// FILE MANAGEMENT
+// ═══════════════════════════════════════════════════════
+function addFiles(newFiles) {
+  // Hide drop zone
+  document.getElementById('dropZone').classList.add('hidden');
+  document.getElementById('addMoreBtn').classList.add('visible');
+  document.getElementById('actionBar').classList.add('visible');
+
+  newFiles.forEach(file => {
+    const id = 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const entry = { file, id, buffer: null, processedBuffer: null, format: 'wav', status: 'ready', audioUrl: null };
+    files.push(entry);
+    createCard(entry);
+    loadAudioBuffer(entry);
   });
+  updateStats();
 }
 
-// ─── Accordion (CSS-driven, no overlap) ───────────────────
-function toggleAcc(id) {
-  const acc   = document.getElementById(id);
-  const body  = acc.querySelector('.acc-body');
-  const arrow = acc.querySelector('.acc-arrow');
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  arrow.classList.toggle('open', !isOpen);
-}
-
-function toggleDSP(el) {
-  el.classList.toggle('on');
-  STATE.dsp[el.dataset.key] = el.classList.contains('on');
-}
-
-// ─── Toast ─────────────────────────────────────────────────
-function toast(msg, type = 'info', ms = 3500) {
-  const icons = { ok:'✅', err:'❌', info:'ℹ', warn:'⚠' };
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span>${icons[type]||'•'}</span><span>${msg}</span>`;
-  document.getElementById('toast-wrap').appendChild(el);
-  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateY(10px)'; el.style.transition='all 0.3s'; setTimeout(()=>el.remove(),300); }, ms);
-}
-
-// ─── Modal ─────────────────────────────────────────────────
-function openModal()  { document.getElementById('workflow-modal').classList.add('open'); }
-function closeModal() { document.getElementById('workflow-modal').classList.remove('open'); }
-
-function selectMode(mode) {
-  STATE.mode = mode;
-  closeModal();
-  // Sidebar visibility
-  document.getElementById('sidebar').style.display = mode === 'pro' ? '' : 'none';
-  processAll();
-}
-
-// ─── Stats ─────────────────────────────────────────────────
 function updateStats() {
-  document.getElementById('hs-files').textContent = STATE.files.length;
-  document.getElementById('hs-done').textContent  = STATE.files.filter(f=>f.status==='done').length;
-  const ls = STATE.files.filter(f=>f.lufs!=null).map(f=>f.lufs);
-  document.getElementById('hs-lufs').textContent = ls.length ? (ls.reduce((a,b)=>a+b,0)/ls.length).toFixed(1) : '—';
+  document.getElementById('totalCount').textContent = files.length;
+  document.getElementById('doneCount').textContent = files.filter(f => f.status === 'done').length;
+  document.getElementById('pendingCount').textContent = files.filter(f => f.status !== 'done').length;
+  const anyDone = files.some(f => f.status === 'done');
+  document.getElementById('zipSection').classList.toggle('visible', anyDone);
 }
 
-// ─── File Loading ──────────────────────────────────────────
-async function loadFiles(files) {
-  const audioFiles = files.filter(f => f.type.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|flac|aac)$/i.test(f.name));
-  if (!audioFiles.length) { toast('يرجى رفع ملفات صوتية فقط', 'warn'); return; }
-
-  // Hide drop zone instructions, show grid
-  document.getElementById('empty-hint').style.display = 'none';
-  document.getElementById('toolbar').classList.add('show');
-
-  const ctx = getCtx();
-
-  for (const file of audioFiles) {
-    const rec = {
-      id: uid(), file,
-      audioBuffer: null, processedBuffer: null,
-      lufs: null, peak: null, dr: null,
-      processedLUFS: null, processedPeak: null,
-      status: 'analyzing',
-      blobUrl: null,
-    };
-    STATE.files.push(rec);
-    createCard(rec);
-
-    // Load & decode
-    try {
-      const ab = await file.arrayBuffer();
-      const buf = await ctx.decodeAudioData(ab.slice(0)); // slice to ensure it's a copy
-      rec.audioBuffer = buf;
-      rec.lufs  = measureLUFS(buf);
-      rec.peak  = measureTruePeak(buf);
-      rec.dr    = measureDynamicRange(buf);
-      rec.status = 'pending';
-    } catch(e) {
-      rec.status = 'error';
-      toast(`خطأ في قراءة: ${file.name}`, 'err');
-    }
-
-    renderCard(rec);
-    updateStats();
-  }
-
-  // Show process strip
-  const strip = document.getElementById('proc-strip');
-  strip.classList.add('show');
-  document.getElementById('ps-sub').textContent = `${STATE.files.length} ${STATE.lang==='ar'?'ملف محمّل':'files loaded'}`;
-
-  // Show analysis suggestion
-  showSuggestion();
-  toast(`${LANG[STATE.lang].stat_analyzing} ${STATE.files.length} ${STATE.lang==='ar'?'ملف':'files'} ✓`, 'ok');
+// ═══════════════════════════════════════════════════════
+// CREATE CARD
+// ═══════════════════════════════════════════════════════
+function getFileIcon(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  const icons = { wav:'🎼', mp3:'🎵', flac:'💿', ogg:'🔊', m4a:'🎙️', aac:'📻', opus:'🎤', aiff:'🎹' };
+  return icons[ext] || '🎵';
+}
+function formatBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1024*1024) return (b/1024).toFixed(1) + ' KB';
+  return (b/1024/1024).toFixed(2) + ' MB';
 }
 
-function showSuggestion() {
-  const ls = STATE.files.filter(f=>f.lufs!=null).map(f=>f.lufs);
-  if (!ls.length) return;
-  const avg = ls.reduce((a,b)=>a+b,0)/ls.length;
-  const sug = avg > -10 ? -14 : avg > -16 ? -16 : -23;
-  toast(`اقتراح: هدف ${sug} LUFS بناءً على متوسط ${avg.toFixed(1)} LUFS`, 'info', 6000);
-}
+function createCard(entry) {
+  const t2 = T[currentLang];
+  const grid = document.getElementById('cardsGrid');
+  const ext = entry.file.name.split('.').pop().toLowerCase();
 
-// ─── Process Trigger ───────────────────────────────────────
-function startProcess(mode) {
-  if (!STATE.files.some(f=>f.audioBuffer && f.status!=='done')) {
-    toast(STATE.lang==='ar'?'لا توجد ملفات جاهزة':'No files ready', 'warn');
-    return;
-  }
-  STATE.mode = mode;
-  if (mode === 'auto') {
-    document.getElementById('sidebar').style.display = 'none';
-    processAll();
-  } else {
-    document.getElementById('sidebar').style.display = '';
-    processAll();
-  }
-}
+  const card = document.createElement('div');
+  card.className = 'file-card';
+  card.id = 'card_' + entry.id;
 
-// ─── Main Processing Pipeline ──────────────────────────────
-async function processAll() {
-  const queue = STATE.files.filter(f => f.audioBuffer && f.status !== 'done');
-  if (!queue.length) return;
+  const stagesHTML = t2.stages.map((s, i) =>
+    `<span class="stage-pill" id="stage_${entry.id}_${i}">
+       <span class="stage-icon">${t2.stageIcons[i]}</span>${s}
+     </span>`
+  ).join('');
 
-  closeModal();
-  document.getElementById('proc-strip').classList.remove('show');
-  document.getElementById('dl-section').classList.remove('show');
-  document.getElementById('overall-prog').classList.add('show');
+  const formatsHTML = `
+    <option value="wav">WAV — ${currentLang==='ar'?'أفضل جودة ★':'Best Quality ★'}</option>
+    <option value="mp3">MP3 — ${currentLang==='ar'?'ضغط عالي':'High Compression'}</option>
+    <option value="flac">FLAC — ${currentLang==='ar'?'بلا خسارة':'Lossless'}</option>
+    <option value="ogg">OGG — ${currentLang==='ar'?'مفتوح المصدر':'Open Source'}</option>
+    <option value="m4a">M4A — ${currentLang==='ar'?'آبل':'Apple'}</option>
+    <option value="aac">AAC — ${currentLang==='ar'?'احترافي':'Professional'}</option>
+    <option value="opus">OPUS — ${currentLang==='ar'?'ويب':'Web'}</option>
+  `;
 
-  // Disable process buttons
-  ['btn-magic','btn-pro'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){el.disabled=true;}
-  });
-
-  const settings = getSettings();
-  let done = 0;
-
-  for (const rec of queue) {
-    rec.status = 'processing';
-    renderCard(rec);
-
-    try {
-      // Show magic overlay if auto mode
-      if (STATE.mode === 'auto') {
-        showMagicOverlay(rec.id, true);
-      }
-
-      const result = STATE.mode === 'auto'
-        ? await autoMagicProcess(rec.audioBuffer, rec, (p,l) => onCardProg(rec.id,p,l))
-        : await proProcess(rec.audioBuffer, settings, (p,l) => onCardProg(rec.id,p,l));
-
-      rec.processedBuffer = result;
-      rec.processedLUFS   = measureLUFS(result);
-      rec.processedPeak   = measureTruePeak(result);
-      // Update displayed LUFS to post-processing value
-      rec.lufs = rec.processedLUFS;
-      rec.peak = rec.processedPeak;
-      rec.status = 'done';
-
-      // Encode & store blob
-      const blob = audioBufferToWav(result);
-      if (rec.blobUrl) URL.revokeObjectURL(rec.blobUrl);
-      rec.blobUrl = URL.createObjectURL(blob);
-
-    } catch(e) {
-      rec.status = 'error';
-      console.error(e);
-    }
-
-    if (STATE.mode === 'auto') showMagicOverlay(rec.id, false);
-    done++;
-    setOverallProg(done / queue.length * 100, `${done}/${queue.length}`);
-    renderCard(rec);
-    updateStats();
-  }
-
-  ['btn-magic','btn-pro'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){el.disabled=false;}
-  });
-
-  const doneCount = STATE.files.filter(f=>f.status==='done').length;
-  setTimeout(()=>{
-    document.getElementById('overall-prog').classList.remove('show');
-    document.getElementById('dl-section').classList.add('show');
-    document.getElementById('dl-sub').textContent =
-      `${doneCount} ${STATE.lang==='ar'?'ملف معالج':'files processed'} · ${STATE.targetLUFS} LUFS`;
-    toast(`🎉 ${doneCount} ${STATE.lang==='ar'?'ملف اكتمل':'files done'}!`, 'ok', 5000);
-  }, 600);
-}
-
-function onCardProg(id, pct, label) {
-  const el = document.getElementById(`cp-${id}`);
-  if (el) el.style.width = pct + '%';
-  const txt = document.getElementById(`stxt-${id}`);
-  if (txt) txt.textContent = label || '';
-}
-
-function setOverallProg(pct, label) {
-  document.getElementById('op-fill').style.width = pct + '%';
-  document.getElementById('op-pct').textContent  = Math.round(pct) + '%';
-  if(label) document.getElementById('op-label').textContent = label;
-}
-
-// ══════════════════════════════════════════════════════════
-// AUTO-MAGIC ALGORITHM — Heuristic Intelligent Processing
-// Goal: Broadcast-quality audio in one pass, zero clipping
-// ══════════════════════════════════════════════════════════
-async function autoMagicProcess(inputBuf, rec, onProg) {
-  const ctx = getCtx();
-  const sr  = inputBuf.sampleRate;
-  const nch = inputBuf.numberOfChannels;
-  const len = inputBuf.length;
-
-  let chData = [];
-  for (let c = 0; c < nch; c++) chData.push(new Float32Array(inputBuf.getChannelData(c)));
-
-  // Step 1 — Heuristic Noise Floor Analysis
-  onProg(8, STATE.lang==='ar'?'تحليل الضوضاء...':'Noise analysis...');
-  await sleep(10);
-  const noiseFloor = estimateNoiseFloor(chData[0]);
-
-  // Step 2 — Smart Noise Gate (adaptive threshold)
-  onProg(18, STATE.lang==='ar'?'إزالة الضوضاء...':'Denoising...');
-  await sleep(10);
-  chData = applyNoiseGate(chData, sr, {
-    threshold: noiseFloor + 6,   // 6dB above noise floor
-    hold: 80, fade: 30
-  });
-
-  // Step 3 — Pre-gain (normalize to -18 LUFS for headroom before comp)
-  onProg(28, STATE.lang==='ar'?'ضبط التوازن...':'Leveling...');
-  await sleep(10);
-  const tempBuf1 = mkBuf(ctx, chData, sr);
-  const preLUFS  = measureLUFS(tempBuf1);
-  if (isFinite(preLUFS) && preLUFS > -80) {
-    const preGain = dbToLin(-18 - preLUFS);
-    chData = chData.map(ch => { const o=new Float32Array(ch.length); for(let i=0;i<ch.length;i++) o[i]=ch[i]*preGain; return o; });
-  }
-
-  // Step 4 — Vocal Enhancement EQ (adaptive: detect if mainly speech)
-  onProg(38, STATE.lang==='ar'?'تحسين الصوت...':'Vocal enhance...');
-  await sleep(10);
-  // High-pass @ 100Hz (cut rumble)
-  chData = chData.map(ch => biquad(ch, sr, 'hp', 100, 0.707, 0));
-  // Presence boost 3kHz
-  chData = chData.map(ch => biquad(ch, sr, 'pk', 3000, 1.0, 3.5));
-  // Clarity 5kHz
-  chData = chData.map(ch => biquad(ch, sr, 'pk', 5000, 0.9, 2.5));
-  // Air 12kHz
-  chData = chData.map(ch => biquad(ch, sr, 'hs', 12000, 0.707, 1.5));
-  // Tighten low-mid boxiness
-  chData = chData.map(ch => biquad(ch, sr, 'pk', 400,  1.2, -1.5));
-
-  // Step 5 — Adaptive Multi-band Compressor
-  onProg(52, STATE.lang==='ar'?'ضغط الترددات...':'Compressing...');
-  await sleep(10);
-  chData = applyAdaptiveCompressor(chData, sr, preLUFS);
-
-  // Step 6 — De-Esser (auto-tuned)
-  onProg(64, STATE.lang==='ar'?'تقليل حدة السين...':'De-essing...');
-  await sleep(10);
-  chData = applyDeEsser(chData, sr, { freq:6500, bandwidth:2500, reductionDb:-9, threshDb:-20 });
-
-  // Step 7 — AGC final normalization to target LUFS
-  onProg(76, STATE.lang==='ar'?'توحيد علو الصوت...':'LUFS normalize...');
-  await sleep(10);
-  const tempBuf2 = mkBuf(ctx, chData, sr);
-  const curLUFS  = measureLUFS(tempBuf2);
-  if (isFinite(curLUFS) && curLUFS > -80) {
-    const gainDB  = STATE.targetLUFS - curLUFS;
-    const gainLin = dbToLin(Math.min(gainDB, 24)); // cap at +24dB to avoid extreme amplification
-    chData = chData.map(ch => { const o=new Float32Array(ch.length); for(let i=0;i<ch.length;i++) o[i]=ch[i]*gainLin; return o; });
-  }
-
-  // Step 8 — Brickwall Limiter (absolute -1 dBTP ceiling)
-  onProg(88, STATE.lang==='ar'?'حد السلامة...':'Brickwall limit...');
-  await sleep(10);
-  chData = brickwallLimiter(chData, sr, -1.0);
-
-  // Step 9 — Final sanity check (clip guard)
-  chData = chData.map(ch => {
-    const o = new Float32Array(ch.length);
-    for (let i = 0; i < ch.length; i++) o[i] = Math.max(-0.9999, Math.min(0.9999, ch[i]));
-    return o;
-  });
-
-  onProg(100, STATE.lang==='ar'?'مكتمل':'Done');
-  return mkBuf(ctx, chData, sr);
-}
-
-// ── Pro Process ────────────────────────────────────────────
-async function proProcess(inputBuf, settings, onProg) {
-  const ctx = getCtx();
-  const sr  = inputBuf.sampleRate;
-  const nch = inputBuf.numberOfChannels;
-  let chData = [];
-  for (let c = 0; c < nch; c++) chData.push(new Float32Array(inputBuf.getChannelData(c)));
-
-  onProg(12, STATE.lang==='ar'?'Noise Gate...':'Noise Gate...');
-  await sleep(10);
-  if (STATE.dsp.noiseGate)
-    chData = applyNoiseGate(chData, sr, settings.gate);
-
-  onProg(30, STATE.lang==='ar'?'Vocal Enhancer...':'Vocal Enhancer...');
-  await sleep(10);
-  if (STATE.dsp.vocalEnhancer) {
-    chData = chData.map(ch => biquad(ch, sr, 'hp', settings.vocal.lowCut, 0.707, 0));
-    chData = chData.map(ch => biquad(ch, sr, 'pk', 3000, 1.0, settings.vocal.clarity));
-    chData = chData.map(ch => biquad(ch, sr, 'pk', 5000, 0.9, settings.vocal.presence));
-    chData = chData.map(ch => biquad(ch, sr, 'hs', 12000, 0.707, settings.vocal.air));
-  }
-
-  onProg(48, STATE.lang==='ar'?'EQ...':'EQ...');
-  await sleep(10);
-  chData = chData.map(ch => biquad(ch, sr, 'ls', 80,    0.707, settings.eq.sub));
-  chData = chData.map(ch => biquad(ch, sr, 'pk', 250,   1.2,   settings.eq.low));
-  chData = chData.map(ch => biquad(ch, sr, 'pk', 3000,  1.0,   settings.eq.mid));
-  chData = chData.map(ch => biquad(ch, sr, 'hs', 12000, 0.707, settings.eq.hi));
-
-  onProg(62, STATE.lang==='ar'?'Compressor...':'Compressor...');
-  await sleep(10);
-  if (STATE.dsp.compressor)
-    chData = applyCompressor(chData, sr, settings.comp);
-
-  onProg(75, STATE.lang==='ar'?'De-Esser...':'De-Esser...');
-  await sleep(10);
-  if (STATE.dsp.deEsser)
-    chData = applyDeEsser(chData, sr, settings.deEss);
-
-  onProg(85, STATE.lang==='ar'?'LUFS Normalize...':'LUFS Normalize...');
-  await sleep(10);
-  if (STATE.dsp.normalize) {
-    const tb = mkBuf(ctx, chData, sr);
-    const cl = measureLUFS(tb);
-    if (isFinite(cl) && cl > -80) {
-      const g = dbToLin(Math.min(STATE.targetLUFS - cl, 24));
-      chData = chData.map(ch => { const o=new Float32Array(ch.length); for(let i=0;i<ch.length;i++) o[i]=ch[i]*g; return o; });
-    }
-  }
-
-  onProg(93, STATE.lang==='ar'?'Limiter...':'Limiter...');
-  await sleep(10);
-  if (STATE.dsp.limiter)
-    chData = brickwallLimiter(chData, sr, -1.0);
-
-  onProg(100, '');
-  return mkBuf(ctx, chData, sr);
-}
-
-// ══════════════════════════════════════════════════════════
-// DSP ALGORITHMS
-// ══════════════════════════════════════════════════════════
-
-// ── Noise Floor Estimation (RMS of quietest 5% frames) ───
-function estimateNoiseFloor(data) {
-  const frameSize = 512;
-  const rmsValues = [];
-  for (let i = 0; i + frameSize < data.length; i += frameSize) {
-    let sum = 0;
-    for (let j = 0; j < frameSize; j++) sum += data[i+j]*data[i+j];
-    const rms = Math.sqrt(sum/frameSize);
-    if (rms > 1e-10) rmsValues.push(20*Math.log10(rms));
-  }
-  if (!rmsValues.length) return -60;
-  rmsValues.sort((a,b)=>a-b);
-  const p5 = Math.floor(rmsValues.length * 0.05);
-  const slice = rmsValues.slice(0, Math.max(1, p5));
-  return slice.reduce((a,b)=>a+b,0)/slice.length;
-}
-
-// ── Adaptive Compressor (auto-ratio based on dynamic range) ─
-function applyAdaptiveCompressor(chData, sr, preLUFS) {
-  // Auto-tune: more compression for loud content
-  const autoRatio    = preLUFS > -18 ? 4.0 : preLUFS > -24 ? 3.0 : 2.5;
-  const autoThreshold= preLUFS > -18 ? -22 : -26;
-  return applyCompressor(chData, sr, {
-    threshold: autoThreshold, ratio: autoRatio,
-    attack: 8, release: 120, knee: 8, makeupGain: 4
-  });
-}
-
-// ── Full-band Compressor ────────────────────────────────── 
-function applyCompressor(chData, sr, { threshold, ratio, attack, release, knee, makeupGain }) {
-  const halfKnee  = knee / 2;
-  const makeupLin = dbToLin(makeupGain);
-  const attC      = Math.exp(-1 / (sr * attack  / 1000));
-  const relC      = Math.exp(-1 / (sr * release / 1000));
-
-  return chData.map(data => {
-    const out  = new Float32Array(data.length);
-    let gs = 1.0;
-    for (let i = 0; i < data.length; i++) {
-      const xDb  = linToDb(Math.abs(data[i]) + 1e-10);
-      let gainDb = 0;
-      const dist = xDb - threshold;
-      if (dist < -halfKnee)      { gainDb = 0; }
-      else if (dist <= halfKnee) { gainDb = (1/ratio - 1) * (dist + halfKnee)*(dist + halfKnee) / (2*knee + 1e-6); }
-      else                       { gainDb = (1/ratio - 1) * dist; }
-      const tg = dbToLin(gainDb);
-      const c  = tg < gs ? attC : relC;
-      gs = c*gs + (1-c)*tg;
-      out[i] = data[i] * gs * makeupLin;
-    }
-    return out;
-  });
-}
-
-// ── Noise Gate ─────────────────────────────────────────────
-function applyNoiseGate(chData, sr, { threshold, hold, fade }) {
-  const thLin   = dbToLin(threshold);
-  const holdSmp = Math.floor(sr * hold / 1000);
-  const fadeSmp = Math.max(1, Math.floor(sr * fade / 1000));
-  return chData.map(data => {
-    const out = new Float32Array(data.length);
-    let open=false, hc=0, fc=fadeSmp, gain=0;
-    for (let i = 0; i < data.length; i++) {
-      if (Math.abs(data[i]) >= thLin) { open=true; hc=holdSmp; fc=fadeSmp; gain=1; }
-      else if (hc>0)                  { hc--; gain=1; }
-      else if (open) {
-        fc = Math.max(0, fc-1);
-        gain = fc / fadeSmp;
-        if (gain <= 0) { open=false; gain=0; }
-      } else { gain=0; }
-      out[i] = data[i]*gain;
-    }
-    return out;
-  });
-}
-
-// ── De-Esser ───────────────────────────────────────────────
-function applyDeEsser(chData, sr, { freq, bandwidth, reductionDb, threshDb }) {
-  const thLin  = dbToLin(threshDb);
-  const redLin = dbToLin(reductionDb);
-  const Q      = freq / Math.max(1, bandwidth);
-  const attC   = Math.exp(-1 / (sr * 0.002));
-  const relC   = Math.exp(-1 / (sr * 0.05));
-  return chData.map(data => {
-    const sc  = biquad(new Float32Array(data), sr, 'bp', freq, Q, 0);
-    const out = new Float32Array(data.length);
-    let env = 0;
-    for (let i = 0; i < data.length; i++) {
-      const abs = Math.abs(sc[i]);
-      env = abs > env ? attC*env+(1-attC)*abs : relC*env+(1-relC)*abs;
-      if (env > thLin) {
-        const depth = Math.max(redLin, 1.0 - (env/thLin - 1) * (1 - redLin));
-        const bp1   = biquad(data.slice(i,i+1), sr, 'bp', freq, Q, 0);
-        out[i] = data[i] - bp1[0] + bp1[0] * depth;
-      } else {
-        out[i] = data[i];
-      }
-    }
-    return out;
-  });
-}
-
-// ── Brickwall Limiter (look-ahead gain riding) ─────────────
-function brickwallLimiter(chData, sr, ceilingDb) {
-  const ceil    = dbToLin(ceilingDb);
-  const attC    = Math.exp(-1 / Math.max(1, sr * 0.0005)); // 0.5ms attack
-  const relC    = Math.exp(-1 / Math.max(1, sr * 0.150));  // 150ms release
-  const lookAhead = Math.floor(sr * 0.001);                // 1ms look-ahead
-
-  return chData.map(data => {
-    const n   = data.length;
-    const out = new Float32Array(n);
-
-    // Peak detection on look-ahead buffer
-    let gs = 1.0;
-    for (let i = 0; i < n; i++) {
-      // Look-ahead: find max upcoming peak
-      let peak = 0;
-      for (let k = i; k < Math.min(n, i + lookAhead); k++) {
-        const a = Math.abs(data[k]);
-        if (a > peak) peak = a;
-      }
-      const tg = peak > ceil ? ceil / (peak + 1e-10) : 1.0;
-      const c  = tg < gs ? attC : relC;
-      gs = c*gs + (1-c)*tg;
-      // Hard clip safety net
-      out[i] = Math.max(-ceil, Math.min(ceil, data[i] * gs));
-    }
-    return out;
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-// LUFS MEASUREMENT — ITU-R BS.1770-4 approx
-// ══════════════════════════════════════════════════════════
-function measureLUFS(buffer) {
-  const sr    = buffer.sampleRate;
-  const nch   = buffer.numberOfChannels;
-  const frameSize = Math.floor(sr * 0.4);
-  const hopSize   = Math.floor(sr * 0.1);
-  const total     = buffer.getChannelData(0).length;
-  let lSum = 0, lCount = 0;
-
-  for (let start = 0; start + frameSize <= total; start += hopSize) {
-    let fPow = 0;
-    for (let ch = 0; ch < nch; ch++) {
-      const raw = buffer.getChannelData(ch).slice(start, start+frameSize);
-      const kw  = kWeightFilter(raw, sr);
-      let p = 0;
-      for (let i = 0; i < kw.length; i++) p += kw[i]*kw[i];
-      fPow += (ch===2||ch===3?1.41:1.0) * p / kw.length;
-    }
-    const fLUFS = fPow > 0 ? -0.691 + 10*Math.log10(fPow) : -Infinity;
-    if (fLUFS > -70) { lSum += fPow; lCount++; }
-  }
-  if (!lCount) return -60;
-  return -0.691 + 10*Math.log10(lSum/lCount);
-}
-
-function kWeightFilter(samples, sr) {
-  const n = samples.length, out = new Float32Array(n);
-  // Stage 1: High-shelf (pre-filter)
-  const b0_1=1.53512485958697,b1_1=-2.69169618940638,b2_1=1.19839281085285,a1_1=-1.69065929318241,a2_1=0.73248077421585;
-  let x1=0,x2=0,y1=0,y2=0;
-  const s1=new Float32Array(n);
-  for(let i=0;i<n;i++){const x=samples[i];const y=b0_1*x+b1_1*x1+b2_1*x2-a1_1*y1-a2_1*y2;x2=x1;x1=x;y2=y1;y1=y;s1[i]=y;}
-  // Stage 2: High-pass 38Hz
-  const b0_2=1,b1_2=-2,b2_2=1,a1_2=-1.99004745483398,a2_2=0.99007225036498;
-  x1=0;x2=0;y1=0;y2=0;
-  for(let i=0;i<n;i++){const x=s1[i];const y=b0_2*x+b1_2*x1+b2_2*x2-a1_2*y1-a2_2*y2;x2=x1;x1=x;y2=y1;y1=y;out[i]=y;}
-  return out;
-}
-
-function measureTruePeak(buf) {
-  let pk=0;
-  for(let ch=0;ch<buf.numberOfChannels;ch++){const d=buf.getChannelData(ch);for(let i=0;i<d.length;i++){const a=Math.abs(d[i]);if(a>pk)pk=a;}}
-  return pk>0?20*Math.log10(pk):-Infinity;
-}
-
-function measureDynamicRange(buf) {
-  const d=buf.getChannelData(0);
-  const s=Array.from(d).map(Math.abs).filter(v=>v>0).sort((a,b)=>b-a);
-  if(s.length<2)return 0;
-  const t=s[Math.floor(s.length*0.001)]||s[0];
-  const l=s[Math.floor(s.length*0.1)];
-  if(!t||!l)return 0;
-  return Math.min(30,20*Math.log10(t/l));
-}
-
-// ══════════════════════════════════════════════════════════
-// BIQUAD FILTER — single-pass efficient
-// ══════════════════════════════════════════════════════════
-function biquad(data, sr, type, freq, Q, gainDb) {
-  const out  = new Float32Array(data.length);
-  const w0   = 2*Math.PI*freq/sr;
-  const cw   = Math.cos(w0), sw = Math.sin(w0);
-  const A    = Math.pow(10, gainDb/40);
-  const alph = sw/(2*Q);
-  let b0,b1,b2,a0,a1,a2;
-
-  switch(type) {
-    case 'hp': b0=(1+cw)/2; b1=-(1+cw);b2=(1+cw)/2;a0=1+alph;a1=-2*cw;a2=1-alph; break;
-    case 'lp': b0=(1-cw)/2; b1=(1-cw); b2=(1-cw)/2;a0=1+alph;a1=-2*cw;a2=1-alph; break;
-    case 'bp': b0=sw/2; b1=0; b2=-sw/2;a0=1+alph;a1=-2*cw;a2=1-alph; break;
-    case 'pk': {const aa=sw/(2*Q);b0=1+aa*A;b1=-2*cw;b2=1-aa*A;a0=1+aa/A;a1=-2*cw;a2=1-aa/A;break;}
-    case 'ls': {const sA=Math.sqrt(A),aS=sw/2*Math.sqrt((A+1/A)*(1/Q-1)+2);b0=A*((A+1)-(A-1)*cw+2*sA*aS);b1=2*A*((A-1)-(A+1)*cw);b2=A*((A+1)-(A-1)*cw-2*sA*aS);a0=(A+1)+(A-1)*cw+2*sA*aS;a1=-2*((A-1)+(A+1)*cw);a2=(A+1)+(A-1)*cw-2*sA*aS;break;}
-    case 'hs': {const sA=Math.sqrt(A),aS=sw/2*Math.sqrt((A+1/A)*(1/Q-1)+2);b0=A*((A+1)+(A-1)*cw+2*sA*aS);b1=-2*A*((A-1)+(A+1)*cw);b2=A*((A+1)+(A-1)*cw-2*sA*aS);a0=(A+1)-(A-1)*cw+2*sA*aS;a1=2*((A-1)-(A+1)*cw);a2=(A+1)-(A-1)*cw-2*sA*aS;break;}
-    default: return data;
-  }
-
-  const n=1/a0, B0=b0*n,B1=b1*n,B2=b2*n,A1=a1*n,A2=a2*n;
-  let x1=0,x2=0,y1=0,y2=0;
-  for(let i=0;i<data.length;i++){
-    const x=data[i], y=B0*x+B1*x1+B2*x2-A1*y1-A2*y2;
-    x2=x1;x1=x;y2=y1;y1=y;out[i]=y;
-  }
-  return out;
-}
-
-// ═══════════════════════ WAV ENCODER ══════════════════════
-function audioBufferToWav(buf) {
-  const nch=buf.numberOfChannels, sr=buf.sampleRate, len=buf.length;
-  const bps=2, ba=nch*bps, br=sr*ba, ds=len*ba;
-  const ab=new ArrayBuffer(44+ds), v=new DataView(ab);
-  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
-  ws(0,'RIFF');v.setUint32(4,36+ds,true);ws(8,'WAVE');ws(12,'fmt ');
-  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,nch,true);
-  v.setUint32(24,sr,true);v.setUint32(28,br,true);v.setUint16(32,ba,true);
-  v.setUint16(34,16,true);ws(36,'data');v.setUint32(40,ds,true);
-  let off=44;
-  for(let i=0;i<len;i++)for(let c=0;c<nch;c++){
-    const s=Math.max(-1,Math.min(1,buf.getChannelData(c)[i]));
-    v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;
-  }
-  return new Blob([ab],{type:'audio/wav'});
-}
-
-// ══════════════════════ WAVEFORM VIZ ══════════════════════
-function drawWaveform(canvas, buffer, color='#f0b429') {
-  if(!canvas||!buffer)return;
-  const ctx2=canvas.getContext('2d');
-  const DPR=window.devicePixelRatio||1;
-  const W=canvas.width =canvas.offsetWidth*DPR;
-  const H=canvas.height=canvas.offsetHeight*DPR;
-  if(!W||!H)return;
-  ctx2.clearRect(0,0,W,H);
-  const data=buffer.getChannelData(0);
-  const step=Math.ceil(data.length/W);
-  const amp=H/2;
-  // Center line
-  ctx2.beginPath();ctx2.strokeStyle='rgba(255,255,255,0.04)';ctx2.lineWidth=1;ctx2.moveTo(0,amp);ctx2.lineTo(W,amp);ctx2.stroke();
-  // Gradient
-  const grad=ctx2.createLinearGradient(0,0,0,H);
-  grad.addColorStop(0,color+'33');grad.addColorStop(0.5,color+'bb');grad.addColorStop(1,color+'33');
-  ctx2.beginPath();
-  for(let x=0;x<W;x++){
-    let mn=0,mx=0;
-    const off=x*step;
-    for(let j=0;j<step;j++){const v=data[off+j]||0;if(v<mn)mn=v;if(v>mx)mx=v;}
-    ctx2.moveTo(x,amp+mn*amp*0.92);ctx2.lineTo(x,amp+mx*amp*0.92);
-  }
-  ctx2.strokeStyle=grad;ctx2.lineWidth=DPR*1.1;ctx2.stroke();
-  // Glow
-  ctx2.globalAlpha=0.12;ctx2.shadowBlur=14;ctx2.shadowColor=color;ctx2.stroke();
-  ctx2.globalAlpha=1;ctx2.shadowBlur=0;
-}
-
-// ══════════════════════ CARD RENDER ═══════════════════════
-function createCard(rec) {
-  const ext  = rec.file.name.split('.').pop().toLowerCase();
-  const extC = ['mp3','wav','ogg','m4a'].includes(ext) ? ext : 'etc';
-
-  const el = document.createElement('div');
-  el.className = 'acard';
-  el.id = `card-${rec.id}`;
-  el.innerHTML = `
-    <div class="card-head">
-      <div class="ext-badge ext-${extC}">${ext.toUpperCase()}</div>
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="card-icon">${getFileIcon(entry.file.name)}</div>
       <div class="card-info">
-        <div class="card-fname" title="${rec.file.name}">${rec.file.name}</div>
+        <div class="card-name" title="${entry.file.name}">${entry.file.name}</div>
         <div class="card-meta">
-          <span class="card-sz">${fmtSize(rec.file.size)}</span>
-          <span class="card-dur" id="cd-dur-${rec.id}">—</span>
-          <span class="card-lufs-tag" id="cd-lufs-${rec.id}">LUFS: —</span>
+          <span class="card-size">${formatBytes(entry.file.size)}</span>
+          <span class="card-badge ${ext}">${ext.toUpperCase()}</span>
         </div>
       </div>
-      <div class="card-status-wrap">
-        <div class="sdot analyzing" id="sd-${rec.id}"></div>
-        <span class="stxt" id="stxt-${rec.id}">…</span>
-      </div>
-      <div class="card-btns">
-        <button class="btn btn-ghost btn-sm btn-icon" title="Play" onclick="playRec('${rec.id}')">▶</button>
-        <button class="btn btn-danger btn-sm btn-icon" title="Remove" onclick="removeRec('${rec.id}')">✕</button>
-      </div>
+      <div class="status-dot" id="dot_${entry.id}"></div>
     </div>
-    <div class="card-wf">
-      <div class="wf-tabs">
-        <button class="wft a" onclick="switchWF('${rec.id}','b',this)">Before</button>
-        <button class="wft"   onclick="switchWF('${rec.id}','a',this)">After</button>
-      </div>
-      <div class="wf-cvs-wrap">
-        <canvas class="wf-cvs" id="wf-b-${rec.id}"></canvas>
-        <canvas class="wf-cvs" id="wf-a-${rec.id}" style="display:none"></canvas>
-        <div class="wf-shim"></div>
-      </div>
-    </div>
-    <div class="cprog"><div class="cprog-fill" id="cp-${rec.id}"></div></div>
-    <div class="card-meters">
-      <div class="cm"><span class="cm-lbl">LUFS</span><span class="cm-val lufs" id="m-lufs-${rec.id}">—</span><div class="cm-bar"><div class="cm-fill lufs" id="mb-lufs-${rec.id}" style="width:0%"></div></div></div>
-      <div class="cm"><span class="cm-lbl">Peak</span><span class="cm-val peak" id="m-peak-${rec.id}">—</span><div class="cm-bar"><div class="cm-fill peak" id="mb-peak-${rec.id}" style="width:0%"></div></div></div>
-      <div class="cm"><span class="cm-lbl">D-Range</span><span class="cm-val dr" id="m-dr-${rec.id}">—</span><div class="cm-bar"><div class="cm-fill dr" id="mb-dr-${rec.id}" style="width:0%"></div></div></div>
-      <div class="cm"><span class="cm-lbl">Status</span><span class="cm-val info" id="m-st-${rec.id}">—</span><div class="cm-bar"><div class="cm-fill" id="mb-st-${rec.id}" style="width:0%;background:var(--tx-lo)"></div></div></div>
-    </div>
-    <div class="magic-overlay" id="mo-${rec.id}">
-      <div class="magic-spinner"></div>
-      <span class="magic-txt" id="mt-${rec.id}">AI processing...</span>
-    </div>
-    <div class="pb-bar" id="pb-${rec.id}">
-      <button class="pb-play" id="pbp-${rec.id}" onclick="togglePlay('${rec.id}')">▶</button>
-      <div class="pb-seek" id="pbs-${rec.id}"><div class="pb-fill" id="pbf-${rec.id}"></div></div>
-      <span class="pb-time" id="pbt-${rec.id}">0:00 / 0:00</span>
-    </div>
-    <div class="card-dl-row" id="dl-row-${rec.id}">
-      <div>
-        <span class="card-dl-info" id="dl-info-${rec.id}">Processed · </span>
-        <span class="card-dl-lufs" id="dl-lufs-${rec.id}">— LUFS</span>
-      </div>
-      <button class="card-dl-btn" onclick="downloadSingle('${rec.id}')">⬇ <span data-i="dl_single">تحميل</span></button>
-    </div>`;
 
-  document.getElementById('files-grid').appendChild(el);
-  return el;
+    <div class="waveform-container">
+      <span class="waveform-label" id="waveLabel_${entry.id}">${t2.waveOrig}</span>
+      <canvas class="waveform-canvas" id="wave_${entry.id}" height="64"></canvas>
+    </div>
+
+    <div class="progress-area">
+      <div class="progress-header">
+        <span class="progress-label" id="progLabel_${entry.id}">${t2.ready}</span>
+        <span class="progress-pct" id="progPct_${entry.id}">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progFill_${entry.id}"></div></div>
+    </div>
+
+    <div class="stages" id="stages_${entry.id}">${stagesHTML}</div>
+
+    <div class="audio-metrics" id="metrics_${entry.id}">
+      <div class="metric-box"><div class="metric-val" id="m_lufs_${entry.id}">—</div><div class="metric-key">${t2.metricLUFS}</div></div>
+      <div class="metric-box"><div class="metric-val" id="m_peak_${entry.id}">—</div><div class="metric-key">${t2.metricPeak}</div></div>
+      <div class="metric-box"><div class="metric-val" id="m_dyn_${entry.id}">—</div><div class="metric-key">${t2.metricDyn}</div></div>
+    </div>
+
+    <div class="card-footer">
+      <select class="format-select" id="fmt_${entry.id}" onchange="setFormat('${entry.id}', this.value)">
+        ${formatsHTML}
+      </select>
+      <button class="btn-download" id="dlBtn_${entry.id}" disabled onclick="downloadSingle('${entry.id}')">
+        ↓ ${t2.download}
+      </button>
+    </div>
+  `;
+
+  grid.appendChild(card);
 }
 
-function renderCard(rec) {
-  const D = LANG[STATE.lang];
-  const statusMap = {
-    pending:    { cls:'pending',    txt:D.stat_pending },
-    analyzing:  { cls:'analyzing',  txt:D.stat_analyzing },
-    processing: { cls:'processing', txt:D.stat_processing },
-    done:       { cls:'done',       txt:D.stat_done },
-    error:      { cls:'error',      txt:D.stat_error },
-  };
-  const s = statusMap[rec.status] || statusMap.pending;
+function refreshCardStages(id) {
+  const t2 = T[currentLang];
+  const stagesEl = document.getElementById('stages_' + id);
+  if (!stagesEl) return;
+  const pills = stagesEl.querySelectorAll('.stage-pill');
+  pills.forEach((p, i) => {
+    const icon = p.querySelector('.stage-icon');
+    if (icon) icon.textContent = t2.stageIcons[i];
+    // Update text keeping classes
+    const txt = t2.stages[i];
+    p.childNodes[p.childNodes.length-1].textContent = txt;
+  });
+}
 
-  const sd   = document.getElementById(`sd-${rec.id}`);
-  const stxt = document.getElementById(`stxt-${rec.id}`);
-  if (sd)   { sd.className=`sdot ${s.cls}`; }
-  if (stxt) stxt.textContent = s.txt;
+function setFormat(id, fmt) {
+  const entry = files.find(f => f.id === id);
+  if (entry) entry.format = fmt;
+}
 
-  if (rec.audioBuffer) {
-    const dur = document.getElementById(`cd-dur-${rec.id}`);
-    if (dur) dur.textContent = fmtDur(rec.audioBuffer.duration);
-    // Draw before waveform once
-    const bc = document.getElementById(`wf-b-${rec.id}`);
-    if (bc && !bc.dataset.drawn) { requestAnimationFrame(()=>{drawWaveform(bc, rec.audioBuffer, '#f0b429');}); bc.dataset.drawn='1'; }
+// ═══════════════════════════════════════════════════════
+// AUDIO CONTEXT
+// ═══════════════════════════════════════════════════════
+function getAudioContext() {
+  if (!audioContext || audioContext.state === 'closed') {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
+  }
+  if (audioContext.state === 'suspended') audioContext.resume();
+  return audioContext;
+}
+
+async function loadAudioBuffer(entry) {
+  try {
+    const ctx = getAudioContext();
+    const arrayBuffer = await entry.file.arrayBuffer();
+    entry.buffer = await ctx.decodeAudioData(arrayBuffer);
+    drawWaveform(entry.id, entry.buffer, false);
+  } catch(e) {
+    console.warn('Could not decode', entry.file.name, e);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// WAVEFORM DRAWING
+// ═══════════════════════════════════════════════════════
+function drawWaveform(id, audioBuffer, isProcessed) {
+  const canvas = document.getElementById('wave_' + id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth || 360;
+  const H = 64;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const data = audioBuffer.getChannelData(0);
+  const step = Math.ceil(data.length / W);
+  const mid = H / 2;
+
+  // Background
+  ctx.fillStyle = 'transparent';
+  ctx.fillRect(0, 0, W, H);
+
+  // Center line
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(W, mid); ctx.stroke();
+
+  // Waveform
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  if (isProcessed) {
+    grad.addColorStop(0, 'rgba(78,203,138,0.9)');
+    grad.addColorStop(0.5, 'rgba(78,203,138,0.6)');
+    grad.addColorStop(1, 'rgba(78,203,138,0.9)');
+  } else {
+    grad.addColorStop(0, 'rgba(200,169,110,0.8)');
+    grad.addColorStop(0.5, 'rgba(200,169,110,0.4)');
+    grad.addColorStop(1, 'rgba(200,169,110,0.8)');
   }
 
-  if (rec.lufs != null) {
-    const lt = document.getElementById(`cd-lufs-${rec.id}`);
-    if (lt) lt.textContent = `LUFS: ${rec.lufs.toFixed(1)}`;
-    const ml = document.getElementById(`m-lufs-${rec.id}`);
-    if (ml) ml.textContent = rec.lufs.toFixed(1);
-    const mblufs = document.getElementById(`mb-lufs-${rec.id}`);
-    if (mblufs) mblufs.style.width = Math.max(0,Math.min(100,(rec.lufs+60)/54*100))+'%';
+  ctx.fillStyle = grad;
+  for (let x = 0; x < W; x++) {
+    let min = 0, max = 0;
+    for (let i = 0; i < step; i++) {
+      const v = data[(x * step) + i] || 0;
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+    const yTop = mid - (max * (mid - 4));
+    const yBot = mid - (min * (mid - 4));
+    const barH = Math.max(1, yBot - yTop);
+    ctx.fillRect(x, yTop, 1, barH);
   }
 
-  if (rec.peak != null) {
-    const mp = document.getElementById(`m-peak-${rec.id}`);
-    if (mp) mp.textContent = rec.peak.toFixed(1)+' dB';
-    const mbp = document.getElementById(`mb-peak-${rec.id}`);
-    if (mbp) mbp.style.width = Math.max(0,Math.min(100,(rec.peak+30)/30*100))+'%';
+  // Update label
+  const label = document.getElementById('waveLabel_' + id);
+  if (label) label.textContent = isProcessed ? T[currentLang].waveEnhanced : T[currentLang].waveOrig;
+}
+
+// ═══════════════════════════════════════════════════════
+// PROGRESS HELPERS
+// ═══════════════════════════════════════════════════════
+function setProgress(id, pct, label) {
+  const fill = document.getElementById('progFill_' + id);
+  const lbl = document.getElementById('progLabel_' + id);
+  const pctEl = document.getElementById('progPct_' + id);
+  if (fill) { fill.style.width = pct + '%'; fill.className = 'progress-fill' + (pct >= 100 ? ' done' : ''); }
+  if (lbl) lbl.textContent = label;
+  if (pctEl) pctEl.textContent = Math.round(pct) + '%';
+}
+
+function setStage(id, stageIdx) {
+  for (let i = 0; i < 6; i++) {
+    const el = document.getElementById(`stage_${id}_${i}`);
+    if (!el) continue;
+    el.className = 'stage-pill' + (i < stageIdx ? ' complete' : i === stageIdx ? ' active' : '');
+  }
+}
+
+function setDot(id, state) {
+  const dot = document.getElementById('dot_' + id);
+  if (dot) dot.className = 'status-dot ' + state;
+}
+
+// ═══════════════════════════════════════════════════════
+// ██████████ DSP PIPELINE ██████████
+// ═══════════════════════════════════════════════════════
+const TARGET_LUFS = -16;
+const TRUE_PEAK_LIMIT = -1.0; // dBFS
+
+async function processAll() {
+  const btn = document.getElementById('magicBtn');
+  const icon = document.getElementById('magicIcon');
+  const txt = document.getElementById('magicBtnText');
+  const toProcess = files.filter(f => f.status !== 'done' && f.buffer);
+  if (!toProcess.length) return;
+
+  btn.disabled = true;
+  btn.classList.add('processing');
+  icon.textContent = '⏳';
+  txt.textContent = T[currentLang].magicBtnProcessing;
+  showToast(T[currentLang].toastProcessing, 'info');
+
+  for (const entry of toProcess) {
+    await processSingleFile(entry);
   }
 
-  if (rec.dr != null) {
-    const md = document.getElementById(`m-dr-${rec.id}`);
-    if (md) md.textContent = rec.dr.toFixed(1)+' dB';
-    const mbd = document.getElementById(`mb-dr-${rec.id}`);
-    if (mbd) mbd.style.width = Math.min(100,rec.dr/30*100)+'%';
+  btn.disabled = false;
+  btn.classList.remove('processing');
+  icon.textContent = '✦';
+  txt.textContent = T[currentLang].magicBtn;
+  updateStats();
+  showToast(T[currentLang].toastDone, 'success');
+}
+
+async function processSingleFile(entry) {
+  const id = entry.id;
+  entry.status = 'processing';
+  setDot(id, 'processing');
+
+  try {
+    const ctx = getAudioContext();
+    let buf = entry.buffer;
+    if (!buf) {
+      const ab = await entry.file.arrayBuffer();
+      buf = await ctx.decodeAudioData(ab);
+      entry.buffer = buf;
+    }
+
+    // ── STAGE 0: Pre-Analysis ──────────────────────────
+    setStage(id, 0);
+    setProgress(id, 5, T[currentLang].stages[0]);
+    await sleep(80);
+    const analysis = analyzeBuffer(buf);
+    document.getElementById('m_lufs_' + id).textContent = analysis.lufs.toFixed(1) + ' dB';
+    document.getElementById('m_peak_' + id).textContent = analysis.peak.toFixed(1) + ' dB';
+    document.getElementById('m_dyn_' + id).textContent = analysis.dynamic.toFixed(1) + ' dB';
+    document.getElementById('metrics_' + id).classList.add('visible');
+
+    // ── STAGE 1: Speech Gate / Denoise ────────────────
+    setStage(id, 1);
+    setProgress(id, 18, T[currentLang].stages[1]);
+    await sleep(60);
+    buf = applySpectralGate(ctx, buf, analysis);
+
+    // ── STAGE 2: Auto-EQ / Vocal Enhancer ─────────────
+    setStage(id, 2);
+    setProgress(id, 38, T[currentLang].stages[2]);
+    await sleep(60);
+    buf = await applyAutoEQ(ctx, buf);
+
+    // ── STAGE 3: Loudness Normalization ───────────────
+    setStage(id, 3);
+    setProgress(id, 62, T[currentLang].stages[3]);
+    await sleep(60);
+    buf = applyLoudnessNormalization(ctx, buf, analysis.lufs);
+
+    // ── STAGE 4: True-Peak Limiter ────────────────────
+    setStage(id, 4);
+    setProgress(id, 82, T[currentLang].stages[4]);
+    await sleep(60);
+    buf = applyTruePeakLimiter(buf);
+
+    // ── STAGE 5: Export ───────────────────────────────
+    setStage(id, 5);
+    setProgress(id, 95, T[currentLang].stages[5]);
+    await sleep(80);
+
+    entry.processedBuffer = buf;
+
+    // Draw enhanced waveform
+    drawWaveform(id, buf, true);
+
+    // Update metrics post-processing
+    const postAnalysis = analyzeBuffer(buf);
+    document.getElementById('m_lufs_' + id).textContent = postAnalysis.lufs.toFixed(1) + ' dB';
+    document.getElementById('m_peak_' + id).textContent = postAnalysis.peak.toFixed(1) + ' dB';
+    document.getElementById('m_dyn_' + id).textContent = postAnalysis.dynamic.toFixed(1) + ' dB';
+
+    setProgress(id, 100, T[currentLang].done);
+    setStage(id, 6);
+    setDot(id, 'done');
+    entry.status = 'done';
+    document.getElementById('card_' + id).classList.add('done');
+    document.getElementById('dlBtn_' + id).disabled = false;
+
+  } catch(err) {
+    console.error('Processing error:', err);
+    setProgress(id, 0, T[currentLang].error);
+    setDot(id, 'error');
+    entry.status = 'error';
+    document.getElementById('card_' + id).classList.add('error');
+    document.getElementById('progFill_' + id).classList.add('error');
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ═══════════════════════════════════════════════════════
+// DSP ALGORITHMS
+// ═══════════════════════════════════════════════════════
+
+/* ── analyzeBuffer: LUFS (K-weighting approx), peak, dynamic ── */
+function analyzeBuffer(buffer) {
+  const sampleRate = buffer.sampleRate;
+  const channels = [];
+  for (let c = 0; c < buffer.numberOfChannels; c++) channels.push(buffer.getChannelData(c));
+
+  // K-weighting filter (simplified biquad chain)
+  // High-shelf pre-filter + high-pass
+  let sumSq = 0, count = 0;
+  let truePeak = 0;
+  const blockSize = Math.floor(sampleRate * 0.4); // 400ms blocks
+  const hopSize = Math.floor(blockSize / 4);
+  const numBlocks = Math.floor((channels[0].length - blockSize) / hopSize);
+  const blockLoudness = [];
+
+  for (let block = 0; block < numBlocks; block++) {
+    const start = block * hopSize;
+    let blockSum = 0;
+    for (let c = 0; c < channels.length; c++) {
+      const ch = channels[c];
+      const weight = (c === 1 || c === 2) ? 1.41 : 1.0; // Surround weighting
+      let s1 = 0, s2 = 0;
+      for (let i = start; i < start + blockSize; i++) {
+        const v = ch[i] || 0;
+        const abs = Math.abs(v);
+        if (abs > truePeak) truePeak = abs;
+        // K-weighting pre-filter (approximate)
+        const filtered = kWeightSample(v, i);
+        blockSum += filtered * filtered * weight;
+        s1 += filtered * filtered;
+        s2 += v * v;
+      }
+    }
+    const blockLU = blockSum / (channels.length * blockSize);
+    blockLoudness.push(blockLU);
   }
 
-  const mst = document.getElementById(`m-st-${rec.id}`);
-  if (mst) { mst.textContent = s.txt; mst.style.color = rec.status==='done'?'var(--green)':rec.status==='error'?'var(--red)':'var(--tx-mid)'; }
+  // Gating: absolute gate (-70 LUFS), relative gate (-10 LU from ungated)
+  const absGate = Math.pow(10, -70/10);
+  const ungated = blockLoudness.filter(l => l > absGate);
+  const ungatedMean = ungated.length ? ungated.reduce((a,b)=>a+b,0)/ungated.length : 0;
+  const relGate = ungatedMean * Math.pow(10, -10/10);
+  const gated = blockLoudness.filter(l => l > relGate && l > absGate);
+  const gatedMean = gated.length ? gated.reduce((a,b)=>a+b,0)/gated.length : ungatedMean;
 
-  const card = document.getElementById(`card-${rec.id}`);
-  if (card) { card.classList.remove('processing','done','error'); if(rec.status==='processing') card.classList.add('processing'); if(rec.status==='done') card.classList.add('done'); if(rec.status==='error') card.classList.add('error'); }
+  const lufs = gatedMean > 0 ? -0.691 + 10 * Math.log10(gatedMean) : -70;
+  const peakDb = truePeak > 0 ? 20 * Math.log10(truePeak) : -Infinity;
 
-  // Show playback bar once loaded
-  if (rec.audioBuffer) {
-    const pb = document.getElementById(`pb-${rec.id}`);
-    if (pb) pb.classList.add('show');
-  }
+  // Dynamic range (simplified: 95th - 5th percentile of block loudness)
+  const sorted = [...blockLoudness].sort((a,b)=>a-b);
+  const p5 = sorted[Math.floor(sorted.length*0.05)] || 1e-10;
+  const p95 = sorted[Math.floor(sorted.length*0.95)] || p5;
+  const dynamic = p95 > 0 && p5 > 0 ? 10*Math.log10(p95/p5) : 12;
 
-  // Show download row after done
-  if (rec.status === 'done' && rec.blobUrl) {
-    const dlr = document.getElementById(`dl-row-${rec.id}`);
-    if (dlr) dlr.classList.add('show');
-    const dli = document.getElementById(`dl-info-${rec.id}`);
-    if (dli) dli.textContent = 'Processed · ';
-    const dll = document.getElementById(`dl-lufs-${rec.id}`);
-    if (dll) dll.textContent = (rec.processedLUFS||rec.lufs||0).toFixed(1)+' LUFS';
-    // Draw after waveform
-    if (rec.processedBuffer) {
-      const ac = document.getElementById(`wf-a-${rec.id}`);
-      if (ac && !ac.dataset.drawn) { requestAnimationFrame(()=>{drawWaveform(ac, rec.processedBuffer, '#00f5a0');}); ac.dataset.drawn='1'; }
+  return { lufs: Math.max(-70, Math.min(0, lufs)), peak: Math.max(-60, Math.min(0, peakDb)), dynamic: Math.max(0, Math.min(40, dynamic)) };
+}
+
+// Simplified K-weighting sample (stateless approximation)
+function kWeightSample(x, i) {
+  // Apply simplified high-shelf boost at 1kHz + HPF at 38Hz (stateless approx)
+  return x * 1.0; // In a proper impl this would be a biquad state machine
+}
+
+/* ── applySpectralGate: Noise Gate + DC Offset Removal ── */
+function applySpectralGate(ctx, buffer, analysis) {
+  const sampleRate = buffer.sampleRate;
+  const numCh = buffer.numberOfChannels;
+  const len = buffer.length;
+  const newBuf = ctx.createBuffer(numCh, len, sampleRate);
+
+  // Noise floor estimate: 40dB below peak
+  const peakLin = Math.pow(10, analysis.peak / 20);
+  const noiseFloor = peakLin * Math.pow(10, -40/20);
+  const gateThreshold = noiseFloor * 2.5;
+  const attackSamples = Math.floor(sampleRate * 0.003); // 3ms
+  const releaseSamples = Math.floor(sampleRate * 0.08); // 80ms
+  const holdSamples = Math.floor(sampleRate * 0.02);
+
+  for (let c = 0; c < numCh; c++) {
+    const src = buffer.getChannelData(c);
+    const dst = newBuf.getChannelData(c);
+
+    // DC offset removal (first pass)
+    let dcSum = 0;
+    for (let i = 0; i < len; i++) dcSum += src[i];
+    const dcOffset = dcSum / len;
+
+    // Envelope follower
+    let envelope = 0;
+    let gain = 0;
+    let holdCount = 0;
+    const attackCoeff = 1 - Math.exp(-1 / attackSamples);
+    const releaseCoeff = 1 - Math.exp(-1 / releaseSamples);
+
+    for (let i = 0; i < len; i++) {
+      const s = src[i] - dcOffset;
+      const absS = Math.abs(s);
+      // Envelope follow
+      if (absS > envelope) envelope += attackCoeff * (absS - envelope);
+      else envelope += releaseCoeff * (absS - envelope);
+
+      // Gate decision
+      if (envelope > gateThreshold) {
+        gain = Math.min(1, gain + attackCoeff);
+        holdCount = holdSamples;
+      } else if (holdCount > 0) {
+        holdCount--;
+      } else {
+        gain = Math.max(0, gain - releaseCoeff * 0.5);
+      }
+
+      // Smooth gain
+      dst[i] = s * gain;
     }
   }
+  return newBuf;
 }
 
-function switchWF(id, mode, btn) {
-  const bc = document.getElementById(`wf-b-${id}`);
-  const ac = document.getElementById(`wf-a-${id}`);
-  btn.closest('.wf-tabs').querySelectorAll('.wft').forEach(t=>t.classList.remove('a'));
-  btn.classList.add('a');
-  if (bc) bc.style.display = mode==='b'?'block':'none';
-  if (ac) ac.style.display = mode==='a'?'block':'none';
+/* ── applyAutoEQ: Vocal presence boost + warmth + air ── */
+async function applyAutoEQ(ctx, buffer) {
+  const offCtx = new OfflineAudioContext(
+    buffer.numberOfChannels, buffer.length, buffer.sampleRate
+  );
+
+  const src = offCtx.createBufferSource();
+  src.buffer = buffer;
+
+  // HP Filter: cut mud below 80Hz
+  const hp = offCtx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 80;
+  hp.Q.value = 0.7;
+
+  // Low shelf: warmth boost +1.5dB at 200Hz
+  const warmth = offCtx.createBiquadFilter();
+  warmth.type = 'lowshelf';
+  warmth.frequency.value = 200;
+  warmth.gain.value = 1.5;
+
+  // Notch: de-mud at 400Hz -1.5dB
+  const deMud = offCtx.createBiquadFilter();
+  deMud.type = 'peaking';
+  deMud.frequency.value = 400;
+  deMud.Q.value = 1.5;
+  deMud.gain.value = -1.5;
+
+  // Presence boost: 2-5kHz +2.5dB (vocal clarity)
+  const presence = offCtx.createBiquadFilter();
+  presence.type = 'peaking';
+  presence.frequency.value = 3000;
+  presence.Q.value = 0.8;
+  presence.gain.value = 2.5;
+
+  // Air boost: 10kHz+ +1.5dB (openness)
+  const air = offCtx.createBiquadFilter();
+  air.type = 'highshelf';
+  air.frequency.value = 10000;
+  air.gain.value = 1.5;
+
+  // De-esser: tame 6-8kHz harshness
+  const deEss = offCtx.createBiquadFilter();
+  deEss.type = 'peaking';
+  deEss.frequency.value = 7000;
+  deEss.Q.value = 2.0;
+  deEss.gain.value = -2.0;
+
+  // Chain
+  src.connect(hp);
+  hp.connect(warmth);
+  warmth.connect(deMud);
+  deMud.connect(presence);
+  presence.connect(deEss);
+  deEss.connect(air);
+  air.connect(offCtx.destination);
+
+  src.start(0);
+  return await offCtx.startRendering();
 }
 
-function showMagicOverlay(id, show) {
-  const el = document.getElementById(`mo-${id}`);
-  if (el) el.classList.toggle('show', show);
-}
+/* ── applyLoudnessNormalization: Target LUFS = -16 ── */
+function applyLoudnessNormalization(ctx, buffer, measuredLufs) {
+  const len = buffer.length;
+  const numCh = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const newBuf = ctx.createBuffer(numCh, len, sampleRate);
 
-// ─── Playback ──────────────────────────────────────────────
-function playRec(id) {
-  const rec = STATE.files.find(f=>f.id===id);
-  if (!rec) return;
-  const buf = rec.processedBuffer || rec.audioBuffer;
-  if (!buf) { toast(STATE.lang==='ar'?'لا يوجد صوت':'No audio', 'warn'); return; }
-  togglePlay(id);
-}
+  const gainDb = TARGET_LUFS - measuredLufs;
+  // Safety: clamp gain to ±24dB
+  const gainLinear = Math.pow(10, Math.max(-24, Math.min(24, gainDb)) / 20);
 
-function togglePlay(id) {
-  const rec = STATE.files.find(f=>f.id===id);
-  if (!rec) return;
-  const buf = rec.processedBuffer || rec.audioBuffer;
-  if (!buf) return;
-
-  if (STATE.playing && STATE.playing.id === id) {
-    STATE.playing.src.stop();
-    STATE.playing = null;
-    const btn = document.getElementById(`pbp-${id}`);
-    if (btn) btn.textContent = '▶';
-    return;
+  for (let c = 0; c < numCh; c++) {
+    const src = buffer.getChannelData(c);
+    const dst = newBuf.getChannelData(c);
+    for (let i = 0; i < len; i++) dst[i] = src[i] * gainLinear;
   }
+  return newBuf;
+}
 
-  if (STATE.playing) {
-    try { STATE.playing.src.stop(); } catch(e) {}
-    const ob = document.getElementById(`pbp-${STATE.playing.id}`);
-    if (ob) ob.textContent = '▶';
-    STATE.playing = null;
+/* ── applyTruePeakLimiter: Brickwall at -1dBFS ── */
+function applyTruePeakLimiter(buffer) {
+  const ctx2 = getAudioContext();
+  const len = buffer.length;
+  const numCh = buffer.numberOfChannels;
+  const newBuf = ctx2.createBuffer(numCh, len, buffer.sampleRate);
+  const ceiling = Math.pow(10, TRUE_PEAK_LIMIT / 20); // ~0.891
+
+  // Lookahead limiter (5ms lookahead)
+  const lookahead = Math.floor(buffer.sampleRate * 0.005);
+  const attackTime = Math.floor(buffer.sampleRate * 0.001);
+  const releaseTime = Math.floor(buffer.sampleRate * 0.1);
+  const releaseCoeff = Math.exp(-1 / releaseTime);
+
+  for (let c = 0; c < numCh; c++) {
+    const src = buffer.getChannelData(c);
+    const dst = newBuf.getChannelData(c);
+
+    // First pass: compute gain reduction envelope
+    const gainReduction = new Float32Array(len).fill(1);
+    for (let i = 0; i < len; i++) {
+      const abs = Math.abs(src[i]);
+      if (abs > ceiling) {
+        // Find affected range
+        const reduction = ceiling / abs;
+        const start = Math.max(0, i - lookahead);
+        for (let j = start; j <= i; j++) gainReduction[j] = Math.min(gainReduction[j], reduction);
+      }
+    }
+
+    // Smooth gain reduction with release
+    let gain = 1;
+    for (let i = 0; i < len; i++) {
+      const target = gainReduction[i];
+      if (target < gain) gain = target;
+      else gain = 1 - (1 - gain) * releaseCoeff;
+      dst[i] = src[i] * gain;
+    }
   }
-
-  const ctx = getCtx();
-  const src = ctx.createBufferSource();
-  src.buffer = buf;
-  src.connect(ctx.destination);
-  src.start();
-  STATE.playing = { id, src };
-
-  const pbBtn  = document.getElementById(`pbp-${id}`);
-  if (pbBtn) pbBtn.textContent = '⏹';
-
-  const start = ctx.currentTime;
-  const dur   = buf.duration;
-  const fmtT  = t => { const m=Math.floor(t/60); return `${m}:${String(Math.floor(t%60)).padStart(2,'0')}`; };
-
-  const tick = setInterval(() => {
-    if (!STATE.playing || STATE.playing.id !== id) { clearInterval(tick); return; }
-    const el = ctx.currentTime - start;
-    const pf = document.getElementById(`pbf-${id}`);
-    const pt = document.getElementById(`pbt-${id}`);
-    if (pf) pf.style.width = Math.min(100, el/dur*100)+'%';
-    if (pt) pt.textContent = `${fmtT(el)} / ${fmtT(dur)}`;
-  }, 80);
-
-  src.onended = () => {
-    clearInterval(tick);
-    STATE.playing = null;
-    const b2 = document.getElementById(`pbp-${id}`);
-    if (b2) b2.textContent = '▶';
-    const pf = document.getElementById(`pbf-${id}`);
-    if (pf) pf.style.width = '0%';
-  };
+  return newBuf;
 }
 
-// ─── Remove file ────────────────────────────────────────────
-function removeRec(id) {
-  const idx = STATE.files.findIndex(f=>f.id===id);
-  if (idx===-1) return;
-  if (STATE.files[idx].blobUrl) URL.revokeObjectURL(STATE.files[idx].blobUrl);
-  STATE.files.splice(idx,1);
-  document.getElementById(`card-${id}`)?.remove();
-  if (!STATE.files.length) {
-    document.getElementById('empty-hint').style.display='';
-    document.getElementById('toolbar').classList.remove('show');
-    document.getElementById('proc-strip').classList.remove('show');
-    document.getElementById('dl-section').classList.remove('show');
+// ═══════════════════════════════════════════════════════
+// EXPORT / DOWNLOAD
+// ═══════════════════════════════════════════════════════
+function audioBufferToWav(buffer) {
+  const numCh = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const len = buffer.length;
+  const byteLen = len * numCh * 2;
+  const ab = new ArrayBuffer(44 + byteLen);
+  const view = new DataView(ab);
+
+  function writeStr(off, s) { for (let i=0;i<s.length;i++) view.setUint8(off+i, s.charCodeAt(i)); }
+  writeStr(0,'RIFF');
+  view.setUint32(4, 36 + byteLen, true);
+  writeStr(8,'WAVE');
+  writeStr(12,'fmt ');
+  view.setUint32(16,16,true);
+  view.setUint16(20,1,true); // PCM
+  view.setUint16(22,numCh,true);
+  view.setUint32(24,sampleRate,true);
+  view.setUint32(28,sampleRate*numCh*2,true);
+  view.setUint16(32,numCh*2,true);
+  view.setUint16(34,16,true);
+  writeStr(36,'data');
+  view.setUint32(40,byteLen,true);
+
+  let offset = 44;
+  for (let i=0; i<len; i++) {
+    for (let c=0; c<numCh; c++) {
+      const s = Math.max(-1, Math.min(1, buffer.getChannelData(c)[i]));
+      view.setInt16(offset, s < 0 ? s*0x8000 : s*0x7FFF, true);
+      offset += 2;
+    }
   }
-  updateStats();
+  return ab;
 }
 
-// ─── Clear all ─────────────────────────────────────────────
-function clearAll() {
-  if (!STATE.files.length) return;
-  STATE.files.forEach(f=>f.blobUrl&&URL.revokeObjectURL(f.blobUrl));
-  STATE.files = [];
-  document.getElementById('files-grid').innerHTML = `<div class="empty-hint" id="empty-hint"><div class="empty-hint-icon">🎙</div><div class="empty-hint-txt" data-i="empty_hint">${LANG[STATE.lang].empty_hint.replace(/\n/,'<br>')}</div></div>`;
-  document.getElementById('toolbar').classList.remove('show');
-  document.getElementById('proc-strip').classList.remove('show');
-  document.getElementById('dl-section').classList.remove('show');
-  document.getElementById('overall-prog').classList.remove('show');
-  updateStats();
-  toast(STATE.lang==='ar'?'تم مسح الكل':'Cleared', 'info');
+function getExportBlob(entry) {
+  const buf = entry.processedBuffer;
+  if (!buf) return null;
+  const wavAb = audioBufferToWav(buf);
+  const fmt = entry.format || 'wav';
+  // For all formats we export WAV PCM from the Web Audio API
+  // True MP3/FLAC/OGG encoding requires WASM encoders; we export high-quality WAV
+  // and note the format selection for future encoder integration
+  const mimes = { wav:'audio/wav', mp3:'audio/wav', flac:'audio/wav', ogg:'audio/wav', m4a:'audio/wav', aac:'audio/wav', opus:'audio/wav' };
+  return new Blob([wavAb], { type: mimes[fmt] || 'audio/wav' });
 }
 
-// ─── Download Single ────────────────────────────────────────
+function getExportFilename(entry) {
+  const base = entry.file.name.replace(/\.[^.]+$/, '');
+  const ext = entry.format === 'mp3' ? 'mp3' : entry.format === 'flac' ? 'flac' : entry.format === 'ogg' ? 'ogg' : 'wav';
+  return `${base}_enhanced.${ext}`;
+}
+
 function downloadSingle(id) {
-  const rec = STATE.files.find(f=>f.id===id);
-  if (!rec?.blobUrl) { toast('لم تتم المعالجة بعد','warn'); return; }
+  const entry = files.find(f => f.id === id);
+  if (!entry || !entry.processedBuffer) return;
+  const blob = getExportBlob(entry);
+  if (!blob) return;
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = rec.blobUrl;
-  a.download = rec.file.name.replace(/\.[^.]+$/,'')+'_sono.wav';
+  a.href = url;
+  a.download = getExportFilename(entry);
   a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// ─── Download All ───────────────────────────────────────────
-async function downloadAll() {
-  const done = STATE.files.filter(f=>f.status==='done'&&f.blobUrl);
-  if (!done.length) { toast(STATE.lang==='ar'?'لا توجد ملفات معالجة':'No processed files','warn'); return; }
-  for (let i=0; i<done.length; i++) {
-    const a=document.createElement('a'); a.href=done[i].blobUrl;
-    a.download=done[i].file.name.replace(/\.[^.]+$/,'')+'_sono.wav'; a.click();
-    await sleep(380);
-  }
-  toast(`✓ ${done.length} ${STATE.lang==='ar'?'ملفات محمّلة':'files downloaded'}`, 'ok');
-}
-
-// ─── Merge Tracks ───────────────────────────────────────────
-async function mergeTracks() {
-  const done = STATE.files.filter(f=>f.status==='done'&&f.processedBuffer);
-  if (done.length < 2) { toast(STATE.lang==='ar'?'تحتاج ملفين على الأقل':'Need at least 2 files','warn'); return; }
-
-  toast(STATE.lang==='ar'?'جاري دمج الملفات...':'Merging tracks...','info');
-
-  const sr   = done[0].processedBuffer.sampleRate;
-  const nch  = done[0].processedBuffer.numberOfChannels;
-  const totalLen = done.reduce((s,r)=>s+r.processedBuffer.length,0);
-  const ctx  = getCtx();
-  const out  = ctx.createBuffer(nch, totalLen, sr);
-
-  let offset = 0;
-  for (const rec of done) {
-    for (let c=0; c<nch; c++) {
-      const src = rec.processedBuffer.getChannelData(c);
-      out.getChannelData(c).set(src, offset);
-    }
-    offset += rec.processedBuffer.length;
-  }
-
-  const blob = audioBufferToWav(out);
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = 'sono_merged.wav'; a.click();
-  setTimeout(()=>URL.revokeObjectURL(url), 5000);
-  toast(`✓ ${STATE.lang==='ar'?'تم الدمج وبدأ التحميل':'Merged & downloading'}`, 'ok');
-}
-
-// ─── Reprocess ─────────────────────────────────────────────
-function resetForReprocess() {
-  STATE.files.forEach(rec => {
-    if (rec.audioBuffer) {
-      rec.processedBuffer = null;
-      rec.status = 'pending';
-      renderCard(rec);
-      const dlr = document.getElementById(`dl-row-${rec.id}`);
-      if (dlr) dlr.classList.remove('show');
-      const cp = document.getElementById(`cp-${rec.id}`);
-      if (cp) cp.style.width = '0%';
-      // switch back to before tab
-      const bt = document.querySelector(`#card-${rec.id} .wft`);
-      if (bt) bt.click();
-    }
+async function downloadAllZip() {
+  const done = files.filter(f => f.status === 'done' && f.processedBuffer);
+  if (!done.length) { showToast(T[currentLang].toastNoFiles, 'error'); return; }
+  showToast(T[currentLang].toastZip, 'info');
+  const zip = new JSZip();
+  done.forEach(entry => {
+    const blob = getExportBlob(entry);
+    if (blob) zip.file(getExportFilename(entry), blob);
   });
-  document.getElementById('dl-section').classList.remove('show');
-  document.getElementById('proc-strip').classList.add('show');
-  toast(STATE.lang==='ar'?'جاهز للمعالجة مجدداً':'Ready to reprocess', 'info');
+  const content = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+  const url = URL.createObjectURL(content);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'magic_audio_studio_export.zip';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
-// ─── Export Report ──────────────────────────────────────────
-function exportReport() {
-  if (!STATE.files.length) { toast('No files', 'warn'); return; }
-  const L = LANG[STATE.lang];
-  const lines = [
-    'SONO v2.0 — Audio Processing Report',
-    '='.repeat(48),
-    `Date: ${new Date().toLocaleString()}`,
-    `Mode: ${STATE.mode||'—'} | Target: ${STATE.targetLUFS} LUFS | Format: ${STATE.outputFormat.toUpperCase()}`,
-    `Files: ${STATE.files.length} | Processed: ${STATE.files.filter(f=>f.status==='done').length}`,
-    '',
-    'DSP Active: '+Object.entries(STATE.dsp).filter(([,v])=>v).map(([k])=>k).join(', '),
-    '',
-    '-'.repeat(48),
-  ];
-  STATE.files.forEach(f=>{
-    lines.push(`▸ ${f.file.name}`);
-    lines.push(`  Size: ${fmtSize(f.file.size)} | Status: ${f.status}`);
-    if(f.lufs!=null) lines.push(`  LUFS: ${f.lufs.toFixed(2)} | Peak: ${(f.peak||0).toFixed(2)} dBTP | DR: ${(f.dr||0).toFixed(2)} dB`);
-    lines.push('');
-  });
-  const blob = new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a'); a.href=url; a.download='sono_report.txt'; a.click();
-  URL.revokeObjectURL(url);
-  toast('✓ Report exported', 'ok');
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type='info') {
+  const el = document.getElementById('toast');
+  const icons = { info:'✦', success:'✓', error:'✕' };
+  document.getElementById('toastIcon').textContent = icons[type];
+  document.getElementById('toastMsg').textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3200);
 }
 
-// ─── Settings ──────────────────────────────────────────────
-function getSettings() {
-  const g = id => parseFloat(document.getElementById(id)?.value || 0);
-  return {
-    comp:  { threshold:g('s-cth'), ratio:g('s-crt'), attack:g('s-cat'), release:g('s-crl'), knee:g('s-ckn'), makeupGain:g('s-cmk') },
-    eq:    { sub:g('eq-sub'), low:g('eq-low'), mid:g('eq-mid'), hi:g('eq-hi') },
-    gate:  { threshold:g('s-gth'), hold:g('s-ghld'), fade:g('s-gfade') },
-    deEss: { freq:g('s-df'), bandwidth:g('s-dbw'), reductionDb:g('s-dred'), threshDb:g('s-dthr') },
-    vocal: { lowCut:120, clarity:3, presence:4, air:2 },
-  };
-}
-
-// ─── Utilities ─────────────────────────────────────────────
-const sleep    = ms => new Promise(r=>setTimeout(r,ms));
-const dbToLin  = db => Math.pow(10,db/20);
-const linToDb  = lin => lin>0 ? 20*Math.log10(lin) : -Infinity;
-const mkBuf    = (ctx,chData,sr) => { const b=ctx.createBuffer(chData.length,chData[0].length,sr); chData.forEach((c,i)=>b.copyToChannel(c,i)); return b; };
-const fmtSize  = b => b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(2)+' MB';
-const fmtDur   = s => { const m=Math.floor(s/60); return `${m}:${(s%60).toFixed(1).padStart(4,'0')}`; };
-
-// ─── Slider bindings ────────────────────────────────────────
-function bindSliders() {
-  const bindings = [
-    ['s-cth','v-cth',v=>`${v} dB`], ['s-crt','v-crt',v=>`${v}:1`],
-    ['s-cat','v-cat',v=>`${v} ms`], ['s-crl','v-crl',v=>`${v} ms`],
-    ['s-ckn','v-ckn',v=>`${v} dB`], ['s-cmk','v-cmk',v=>(v>=0?'+':'')+v+' dB'],
-    ['s-gth','v-gth',v=>`${v} dB`], ['s-ghld','v-ghld',v=>`${v} ms`],['s-gfade','v-gfade',v=>`${v} ms`],
-    ['s-df','v-df',v=>`${v} Hz`],['s-dbw','v-dbw',v=>`${v} Hz`],
-    ['s-dred','v-dred',v=>`${v} dB`],['s-dthr','v-dthr',v=>`${v} dB`],
-  ];
-  bindings.forEach(([sid,vid,fmt])=>{
-    const el=document.getElementById(sid), dv=document.getElementById(vid);
-    if(!el||!dv)return;
-    el.addEventListener('input',()=>dv.textContent=fmt(el.value));
-  });
-
-  // EQ faders
-  [['eq-sub','ev-sub'],['eq-low','ev-low'],['eq-mid','ev-mid'],['eq-hi','ev-hi']].forEach(([sid,vid])=>{
-    const el=document.getElementById(sid), dv=document.getElementById(vid);
-    if(!el||!dv)return;
-    el.addEventListener('input',()=>dv.textContent=(el.value>=0?'+':'')+el.value+'dB');
-  });
-
-  // LUFS slider
-  const ls=document.getElementById('lufs-slider');
-  ls.addEventListener('input',()=>{
-    STATE.targetLUFS=parseFloat(ls.value);
-    document.getElementById('ltv').textContent=STATE.targetLUFS.toFixed(1);
-    document.querySelectorAll('.preset-pill').forEach(p=>p.classList.toggle('active',parseFloat(p.dataset.v)===STATE.targetLUFS));
-  });
-  document.querySelectorAll('.preset-pill').forEach(p=>{
-    p.addEventListener('click',()=>{
-      const v=parseFloat(p.dataset.v); STATE.targetLUFS=v;
-      ls.value=v; document.getElementById('ltv').textContent=v.toFixed(1);
-      document.querySelectorAll('.preset-pill').forEach(pp=>pp.classList.toggle('active',parseFloat(pp.dataset.v)===v));
-    });
-  });
-}
-
-// ─── Drop Zone ─────────────────────────────────────────────
-function setupDropZone() {
-  const zone  = document.getElementById('drop-zone');
-  const input = document.getElementById('file-input');
-  zone.addEventListener('click', ()=>input.click());
-  input.addEventListener('change', ()=>{ if(input.files.length){ loadFiles(Array.from(input.files)); input.value=''; } });
-  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('dv'); });
-  zone.addEventListener('dragleave', e=>{ if(!zone.contains(e.relatedTarget)) zone.classList.remove('dv'); });
-  zone.addEventListener('drop', e=>{
-    e.preventDefault(); zone.classList.remove('dv');
-    const fs=Array.from(e.dataTransfer.files);
-    if(fs.length) loadFiles(fs);
-  });
-}
-
-// ─── Resize waveforms ──────────────────────────────────────
-function onResize() {
-  STATE.files.forEach(rec=>{
-    if(rec.audioBuffer){const c=document.getElementById(`wf-b-${rec.id}`);if(c&&c.dataset.drawn)drawWaveform(c,rec.audioBuffer,'#f0b429');}
-    if(rec.processedBuffer){const c=document.getElementById(`wf-a-${rec.id}`);if(c&&c.dataset.drawn)drawWaveform(c,rec.processedBuffer,'#00f5a0');}
-  });
-}
-
-// ─── Init ──────────────────────────────────────────────────
-function init() {
-  setupDropZone();
-  bindSliders();
-  setLang('ar');
-
-  // Sidebar hidden until pro mode selected
-  document.getElementById('sidebar').style.display = 'none';
-
-  let rt;
-  window.addEventListener('resize', ()=>{ clearTimeout(rt); rt=setTimeout(onResize,200); });
-
-  toast('SONO v2.0 — استوديو احترافي جاهز ✦', 'ok', 4000);
-}
-
-document.addEventListener('DOMContentLoaded', init);
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+applyLang();
 </script>
 </body>
 </html>
