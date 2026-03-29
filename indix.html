@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ستوديو توحيد الصوت الاحترافي</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .upload-section {
+            background: var(--card-bg);
+            border: 2px dashed var(--primary);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            background: #283548;
+            border-color: #818cf8;
+        }
+
+        .upload-btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .upload-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* تصميم الكروت */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #334155;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            word-break: break-all;
+            color: #e2e8f0;
+        }
+
+        .card-details {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .status {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            color: #fbbf24; /* لون الانتظار */
+        }
+
+        .status.done { color: var(--success); }
+        .status.error { color: #ef4444; }
+
+        .download-btn {
+            margin-top: auto;
+            background-color: var(--success);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            display: none; /* مخفي لحد ما يخلص */
+            transition: 0.3s;
+        }
+
+        .download-btn:hover { background-color: #059669; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>ستوديو توحيد الصوت 🎛️</h1>
+        <p class="subtitle">ارفع كل ملفاتك الصوتية بأي صيغة مرة واحدة. سيتم معالجة كل ملف في كارت منفصل وتوحيد مستوى الصوت باحترافية لتكون كلها بنفس الدرجة.</p>
+    </div>
+
+    <div class="upload-section">
+        <label for="audioInput" class="upload-btn">اختر الملفات الصوتية المُراد توحيدها</label>
+        <input type="file" id="audioInput" accept="audio/*" multiple>
+        <p style="margin-top: 15px; color: var(--text-muted); font-size: 0.9em;">يدعم جميع الصيغ (MP3, WAV, M4A, OGG...)</p>
+    </div>
+
+    <div class="cards-container" id="cardsContainer">
+        </div>
+
+    <script>
+        const audioInput = document.getElementById('audioInput');
+        const cardsContainer = document.getElementById('cardsContainer');
+        
+        // استخدام AudioContext واحد للبرنامج كله
+        const sharedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        audioInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length === 0) return;
+
+            // عشان لو رفع ملفات تانية، يضيفها على القديم ميمسحوش
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                createCardAndProcess(file);
+            }
+            
+            // تفريغ المدخل عشان يقدر يختار نفس الملفات تاني لو حب
+            audioInput.value = '';
+        });
+
+        // دالة تحويل حجم الملف لشكل مقروء
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        async function createCardAndProcess(file) {
+            // 1. إنشاء تصميم الكارت وإضافته للصفحة
+            const cardId = 'card-' + Math.random().toString(36).substr(2, 9);
+            const cardHTML = `
+                <div class="card" id="${cardId}">
+                    <div class="card-title">${file.name}</div>
+                    <div class="card-details">
+                        <span>الصيغة: ${file.type || 'غير معروف'}</span> | 
+                        <span>الحجم: ${formatBytes(file.size)}</span>
+                    </div>
+                    <div class="status" id="status-${cardId}">⏳ جاري القراءة والتحليل...</div>
+                    <a class="download-btn" id="btn-${cardId}">تحميل الملف الموحد</a>
+                </div>
+            `;
+            cardsContainer.insertAdjacentHTML('beforeend', cardHTML);
+
+            const statusEl = document.getElementById(`status-${cardId}`);
+            const btnEl = document.getElementById(`btn-${cardId}`);
+
+            try {
+                // 2. قراءة الملف وفك تشفيره
+                const arrayBuffer = await file.arrayBuffer();
+                const audioBuffer = await sharedAudioContext.decodeAudioData(arrayBuffer);
+                
+                statusEl.innerText = "⚙️ جاري معالجة وتوحيد مستوى الصوت...";
+
+                // 3. الخوارزمية الجديدة (RMS) لتوحيد الصوت بشكل متساوي ومريح للأذن
+                const channelData = audioBuffer.getChannelData(0);
+                
+                // حساب متوسط قوة الصوت (RMS)
+                let sumSquares = 0;
+                let maxPeak = 0;
+                for (let i = 0; i < channelData.length; i++) {
+                    const sample = channelData[i];
+                    sumSquares += sample * sample;
+                    if (Math.abs(sample) > maxPeak) {
+                        maxPeak = Math.abs(sample);
+                    }
+                }
+                const rms = Math.sqrt(sumSquares / channelData.length);
+                
+                // تحديد مستوى الهدف (Target RMS مناسب للويب والمشاريع)
+                const targetRMS = 0.08; 
+                let gainRatio = rms > 0 ? targetRMS / rms : 1;
+
+                // حماية من التشوه (Clipping)
+                if (gainRatio * maxPeak > 0.95) {
+                    gainRatio = 0.95 / maxPeak;
+                }
+
+                // 4. تطبيق التعديل
+                const offlineContext = new OfflineAudioContext(
+                    audioBuffer.numberOfChannels,
+                    audioBuffer.length,
+                    audioBuffer.sampleRate
+                );
+
+                const source = offlineContext.createBufferSource();
+                source.buffer = audioBuffer;
+
+                const gainNode = offlineContext.createGain();
+                gainNode.gain.value = gainRatio;
+
+                source.connect(gainNode);
+                gainNode.connect(offlineContext.destination);
+                source.start();
+
+                const renderedBuffer = await offlineContext.startRendering();
+
+                // 5. تحويل لـ WAV وتجهيز زر التحميل
+                const wavBlob = bufferToWave(renderedBuffer, renderedBuffer.length);
+                const wavUrl = URL.createObjectURL(wavBlob);
+
+                btnEl.href = wavUrl;
+                // تغيير اسم الملف عشان تعرف إنه اتعدل
+                btnEl.download = "Fixed_" + file.name.replace(/\.[^/.]+$/, "") + ".wav";
+                btnEl.style.display = 'block'; // إظهار زر التحميل
+                
+                statusEl.innerText = "✅ تمت المعالجة بنجاح";
+                statusEl.className = "status done";
+
+            } catch (error) {
+                statusEl.innerText = "❌ حدث خطأ: الصيغة قد تكون غير مدعومة أو الملف تالف.";
+                statusEl.className = "status error";
+                console.error(error);
+            }
+        }
+
+        // دالة مساعدة لتحويل الـ AudioBuffer إلى ملف WAV
+        function bufferToWave(abuffer, len) {
+            let numOfChan = abuffer.numberOfChannels,
+                length = len * numOfChan * 2 + 44,
+                buffer = new ArrayBuffer(length),
+                view = new DataView(buffer),
+                channels = [], i, sample, offset = 0, pos = 0;
+
+            function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+            function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // file length - 8
+            setUint32(0x45564157); // "WAVE"
+            setUint32(0x20746d66); // "fmt " chunk
+            setUint32(16); // length = 16
+            setUint16(1); // PCM
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan);
+            setUint16(numOfChan * 2);
+            setUint16(16); // 16-bit
+            setUint32(0x61746164); // "data" chunk
+            setUint32(length - pos - 4);
+
+            for (i = 0; i < abuffer.numberOfChannels; i++)
+                channels.push(abuffer.getChannelData(i));
+
+            while (pos < length) {
+                for (i = 0; i < numOfChan; i++) {
+                    sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                    view.setInt16(pos, sample, true); 
+                    pos += 2;
+                }
+                offset++;
+            }
+            return new Blob([buffer], { type: "audio/wav" });
+        }
+    </script>
+</body>
+</html>
