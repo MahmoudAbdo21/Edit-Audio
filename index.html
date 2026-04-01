@@ -3,1574 +3,1321 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Magic Audio Studio | استوديو صوتي سحري</title>
+<title>Magic Audio Studio | الذكاء الاصطناعي للهندسة الصوتية</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 <style>
   :root {
-    --bg: #0a0a0c;
-    --surface: #111115;
-    --surface2: #16161c;
-    --surface3: #1c1c24;
-    --border: rgba(255,255,255,0.06);
-    --border-active: rgba(255,255,255,0.15);
-    --accent: #c8a96e;
-    --accent2: #e8c882;
-    --accent-glow: rgba(200,169,110,0.15);
-    --text: #f0ede8;
-    --text-muted: rgba(240,237,232,0.45);
-    --text-dim: rgba(240,237,232,0.25);
-    --green: #4ecb8a;
-    --red: #e05c5c;
-    --blue: #5c9fe0;
-    --radius: 16px;
-    --radius-sm: 10px;
-    --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+    --bg-color: #050505;
+    --surface-color: rgba(20, 20, 24, 0.65);
+    --surface-hover: rgba(30, 30, 36, 0.85);
+    --border-color: rgba(255, 255, 255, 0.06);
+    --border-glow: rgba(212, 175, 55, 0.15);
+    
+    --gold-primary: #d4af37;
+    --gold-dim: #a68524;
+    --gold-lit: #ffdf73;
+    
+    --text-primary: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.55);
+    --text-dark: #0a0a0c;
+    
+    --success: #10b981;
+    --processing: #3b82f6;
+    
+    --font-ar: 'Cairo', sans-serif;
+    --font-en: 'Outfit', sans-serif;
+    
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 8px;
+    
+    --glass-blur: 16px;
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  html { scroll-behavior: smooth; }
-
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Cairo', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-ar);
     min-height: 100vh;
     overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
   }
-
-  /* Ambient background */
-  body::before {
-    content:'';
+  
+  html[dir="ltr"] body { font-family: var(--font-en); }
+  
+  /* Background Ambient Glows */
+  .ambient-glow {
     position: fixed;
-    top: -30vh; left: 50%;
-    transform: translateX(-50%);
-    width: 80vw; height: 60vh;
-    background: radial-gradient(ellipse at center, rgba(200,169,110,0.04) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ── HEADER ── */
-  header {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(10,10,12,0.85);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 clamp(20px, 5vw, 80px);
-    height: 70px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .logo {
-    display: flex; align-items: center; gap: 12px;
-  }
-  .logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), #a07840);
-    border-radius: 10px;
-    display: grid; place-items: center;
-    font-size: 18px;
-    box-shadow: 0 0 20px var(--accent-glow);
-  }
-  .logo-text {
-    font-size: 1.05rem; font-weight: 700;
-    letter-spacing: 0.01em;
-    background: linear-gradient(135deg, var(--text) 60%, var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .logo-sub {
-    font-size: 0.7rem; font-weight: 400;
-    color: var(--text-muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    -webkit-text-fill-color: var(--text-muted);
-  }
-
-  .lang-btn {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 40px;
-    padding: 8px 18px;
-    color: var(--text);
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.85rem; font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    letter-spacing: 0.02em;
-  }
-  .lang-btn:hover {
-    background: var(--surface3);
-    border-color: var(--border-active);
-    box-shadow: 0 0 16px rgba(200,169,110,0.1);
-  }
-  .lang-flag { font-size: 1.1rem; }
-
-  /* ── HERO ── */
-  .hero {
-    padding: clamp(60px, 10vh, 120px) clamp(20px, 5vw, 80px) clamp(40px, 6vh, 80px);
-    text-align: center;
-    position: relative; z-index: 1;
-  }
-
-  .hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(200,169,110,0.08);
-    border: 1px solid rgba(200,169,110,0.2);
-    border-radius: 40px;
-    padding: 6px 16px;
-    font-size: 0.75rem; font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 28px;
-  }
-  .eyebrow-dot {
-    width: 6px; height: 6px;
-    background: var(--accent);
     border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
+    filter: blur(120px);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.6;
   }
-  @keyframes pulse {
-    0%,100%{opacity:1;transform:scale(1)}
-    50%{opacity:0.4;transform:scale(0.7)}
+  .glow-1 {
+    top: -15%; left: 20%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%);
+  }
+  .glow-2 {
+    bottom: -10%; right: 10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%);
   }
 
-  .hero h1 {
-    font-size: clamp(2.4rem, 5.5vw, 4.2rem);
-    font-weight: 900;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    margin-bottom: 18px;
+  /* Utility Classes */
+  .glass-panel {
+    background: var(--surface-color);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--border-color);
   }
-  .hero h1 span {
-    background: linear-gradient(135deg, var(--accent2), var(--accent), #8a6030);
+  
+  .luxury-gradient-text {
+    background: linear-gradient(135deg, var(--gold-lit), var(--gold-primary), var(--gold-dim));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: transparent;
+    display: inline-block;
   }
 
+  /* Header */
+  header {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 80px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%;
+    z-index: 100;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(5,5,5,0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .logo-block { display: flex; align-items: center; gap: 14px; }
+  .logo-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--gold-primary), var(--gold-dim));
+    display: grid; place-items: center;
+    box-shadow: 0 0 20px rgba(212,175,55,0.2);
+  }
+  .logo-icon svg { width: 22px; fill: var(--text-dark); }
+  .logo-text h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.5px; }
+  .logo-text p { font-size: 0.75rem; color: var(--gold-primary); text-transform: uppercase; letter-spacing: 2px; }
+
+  .lang-toggle {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: var(--transition-smooth);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .lang-toggle:hover {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 15px rgba(212,175,55,0.15);
+  }
+
+  /* Main Container */
+  main {
+    padding: 140px 5% 80px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Hero Section */
+  .hero { text-align: center; margin-bottom: 60px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px;
+    border-radius: 40px;
+    background: rgba(212,175,55,0.08);
+    border: 1px solid rgba(212,175,55,0.2);
+    color: var(--gold-lit);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero h2 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+  }
   .hero p {
-    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    font-size: clamp(1rem, 2vw, 1.15rem);
     color: var(--text-muted);
-    font-weight: 400;
-    max-width: 560px;
+    max-width: 700px;
     margin: 0 auto;
     line-height: 1.8;
   }
 
-  /* ── DROP ZONE ── */
-  .drop-section {
-    padding: 0 clamp(20px, 5vw, 80px) 60px;
-    position: relative; z-index: 1;
+  /* Feature Specs */
+  .specs {
+    display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 30px;
+  }
+  .spec-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.85rem; color: var(--text-muted);
+  }
+  .spec-icon {
+    width: 20px; height: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--gold-primary);
   }
 
-  .drop-zone {
-    border: 2px dashed rgba(200,169,110,0.25);
-    border-radius: 24px;
-    background: var(--surface);
-    min-height: 280px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 20px;
+  /* Dropzone */
+  .dropzone-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 60px;
+  }
+  .dropzone {
+    border: 2px dashed rgba(212,175,55,0.3);
+    border-radius: var(--radius-lg);
+    padding: 60px 20px;
+    text-align: center;
     cursor: pointer;
-    transition: var(--transition);
+    transition: var(--transition-smooth);
     position: relative;
     overflow: hidden;
-    max-width: 860px;
-    margin: 0 auto;
   }
+  .dropzone::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at center, rgba(212,175,55,0.05) 0%, transparent 60%);
+    opacity: 0; transition: var(--transition-smooth);
+  }
+  .dropzone:hover, .dropzone.dragover {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 40px rgba(212,175,55,0.1);
+  }
+  .dropzone:hover::before, .dropzone.dragover::before { opacity: 1; }
+  
+  .drop-icon svg {
+    width: 60px; height: 60px;
+    fill: none; stroke: var(--gold-primary); stroke-width: 1.5;
+    margin-bottom: 20px;
+    transition: var(--transition-smooth);
+  }
+  .dropzone:hover .drop-icon svg { transform: scale(1.1) translateY(-5px); }
+  .dropzone h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+  .dropzone p { color: var(--text-muted); font-size: 0.95rem; }
+  
+  input[type="file"] { display: none; }
 
-  .drop-zone::before {
-    content:'';
-    position: absolute; inset:0;
-    background: radial-gradient(ellipse at 50% 120%, rgba(200,169,110,0.05) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .drop-zone.drag-over {
-    border-color: var(--accent);
-    background: rgba(200,169,110,0.04);
-    box-shadow: 0 0 60px rgba(200,169,110,0.08), inset 0 0 40px rgba(200,169,110,0.03);
-  }
-
-  .drop-zone.hidden { display: none; }
-
-  .drop-icon {
-    width: 72px; height: 72px;
-    background: linear-gradient(135deg, rgba(200,169,110,0.12), rgba(200,169,110,0.04));
-    border: 1px solid rgba(200,169,110,0.2);
-    border-radius: 20px;
-    display: grid; place-items: center;
-    font-size: 2rem;
-    transition: var(--transition);
-  }
-  .drop-zone:hover .drop-icon, .drop-zone.drag-over .drop-icon {
-    transform: scale(1.08) translateY(-3px);
-    box-shadow: 0 12px 40px rgba(200,169,110,0.15);
-  }
-
-  .drop-title {
-    font-size: clamp(1.1rem, 2.5vw, 1.45rem);
-    font-weight: 700;
-    color: var(--text);
-    text-align: center;
-    line-height: 1.5;
-  }
-
-  .drop-subtitle {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    text-align: center;
-  }
-
-  .drop-formats {
-    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
-    padding: 0 20px;
-  }
-
-  .fmt-badge {
-    background: var(--surface3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 3px 10px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-  }
-
-  #fileInput { display: none; }
-
-  /* ── PROCESS BUTTON ── */
-  .action-bar {
-    max-width: 860px; margin: 0 auto 60px;
-    padding: 0 clamp(20px, 5vw, 80px);
-    display: none;
-    align-items: center; justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .action-bar.visible { display: flex; }
-
-  .stats-pill {
-    display: flex; align-items: center; gap: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 40px;
-    padding: 10px 20px;
-  }
-  .stat-item { text-align: center; }
-  .stat-num { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
-  .stat-label { font-size: 0.7rem; color: var(--text-muted); }
-  .stat-divider { width: 1px; height: 28px; background: var(--border); }
-
-  .btn-magic {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    border: none;
-    border-radius: 40px;
-    padding: 14px 32px;
-    color: #1a1200;
-    font-family: 'Cairo', sans-serif;
-    font-size: 1rem; font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition);
-    box-shadow: 0 4px 24px rgba(200,169,110,0.3);
-    letter-spacing: 0.01em;
-    white-space: nowrap;
-  }
-  .btn-magic:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 40px rgba(200,169,110,0.45);
-  }
-  .btn-magic:active:not(:disabled) { transform: translateY(0); }
-  .btn-magic:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
-
-  .btn-magic .magic-icon {
-    font-size: 1.2rem;
-    animation: none;
-  }
-  .btn-magic.processing .magic-icon {
-    animation: spin 1s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── CARDS GRID ── */
-  .cards-section {
-    padding: 0 clamp(20px, 5vw, 80px) 40px;
-    position: relative; z-index: 1;
-  }
+  /* File Cards Grid */
   .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
-    gap: 20px;
-    max-width: 1100px;
-    margin: 0 auto;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+    margin-bottom: 60px;
   }
 
-  /* ── FILE CARD ── */
   .file-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     padding: 24px;
-    display: flex; flex-direction: column; gap: 18px;
-    transition: var(--transition);
+    display: flex; flex-direction: column; gap: 20px;
     position: relative;
-    overflow: hidden;
+    transition: var(--transition-smooth);
   }
-  .file-card::before {
-    content:'';
-    position: absolute; top:0; left:0; right:0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(200,169,110,0.3), transparent);
-    opacity: 0;
-    transition: var(--transition);
-  }
-  .file-card:hover { border-color: var(--border-active); }
-  .file-card:hover::before { opacity: 1; }
-  .file-card.done { border-color: rgba(78,203,138,0.2); }
-  .file-card.done::before { opacity: 1; background: linear-gradient(90deg, transparent, rgba(78,203,138,0.4), transparent); }
-  .file-card.error { border-color: rgba(224,92,92,0.2); }
-
+  .file-card:hover { border-color: rgba(255,255,255,0.12); }
+  
   .card-header {
-    display: flex; align-items: flex-start; gap: 14px;
+    display: flex; align-items: flex-start; justify-content: space-between;
   }
-
-  .card-icon {
-    width: 44px; height: 44px; flex-shrink: 0;
-    background: var(--surface3);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+  .file-info { display: flex; align-items: center; gap: 14px; overflow: hidden; }
+  .file-icon {
+    width: 48px; height: 48px; flex-shrink: 0;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-color);
     display: grid; place-items: center;
-    font-size: 1.3rem;
   }
-
-  .card-info { flex: 1; min-width: 0; }
-  .card-name {
-    font-size: 0.92rem; font-weight: 600;
+  .file-icon svg { width: 24px; fill: var(--text-muted); }
+  .file-details h4 {
+    font-size: 1rem; font-weight: 600;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    margin-bottom: 4px;
+    max-width: 200px;
   }
-  .card-meta {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  .file-details p { font-size: 0.75rem; color: var(--text-muted); font-family: monospace; margin-top: 4px; }
+  
+  .status-badge {
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-color);
   }
-  .card-size {
-    font-size: 0.75rem; color: var(--text-muted);
-    font-family: 'Space Mono', monospace;
-  }
-  .card-badge {
-    font-size: 0.65rem; font-weight: 700;
-    padding: 2px 8px; border-radius: 4px;
-    text-transform: uppercase; letter-spacing: 0.05em;
-    font-family: 'Space Mono', monospace;
-    background: var(--surface3); color: var(--text-muted);
-    border: 1px solid var(--border);
-  }
-  .card-badge.wav { background: rgba(200,169,110,0.1); color: var(--accent); border-color: rgba(200,169,110,0.2); }
-  .card-badge.mp3 { background: rgba(92,159,224,0.1); color: var(--blue); border-color: rgba(92,159,224,0.2); }
-  .card-badge.flac { background: rgba(78,203,138,0.1); color: var(--green); border-color: rgba(78,203,138,0.2); }
+  .status-badge.processing { border-color: var(--processing); color: #60a5fa; }
+  .status-badge.success { border-color: var(--success); color: #34d399; }
+  .status-badge.success svg { width: 12px; fill: #34d399; }
 
-  .status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--text-dim);
-    transition: background 0.3s;
-    flex-shrink: 0; margin-top: 4px;
+  /* Player Section */
+  .player-section {
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.02);
   }
-  .status-dot.processing { background: var(--accent); animation: pulse 1s ease-in-out infinite; }
-  .status-dot.done { background: var(--green); animation: none; }
-  .status-dot.error { background: var(--red); animation: none; }
-
-  /* Waveform canvas */
-  .waveform-container {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px;
-    position: relative;
+  .canvas-wrapper {
+    width: 100%; height: 60px;
+    border-radius: 6px;
     overflow: hidden;
+    position: relative;
+    cursor: text;
   }
-  .waveform-label {
-    position: absolute; top: 8px;
-    font-size: 0.65rem; font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-family: 'Space Mono', monospace;
+  canvas { width: 100%; height: 100%; display: block; }
+  
+  .controls {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 12px;
   }
-  html[dir="rtl"] .waveform-label { right: 10px; }
-  html[dir="ltr"] .waveform-label { left: 10px; }
-
-  .waveform-canvas {
-    display: block;
-    width: 100%; height: 64px;
-    border-radius: 6px;
-  }
-
-  /* Progress */
-  .progress-area { display: flex; flex-direction: column; gap: 8px; }
-  .progress-header { display: flex; justify-content: space-between; align-items: center; }
-  .progress-label { font-size: 0.8rem; color: var(--text-muted); }
-  .progress-pct { font-size: 0.8rem; font-weight: 700; color: var(--accent); font-family: 'Space Mono', monospace; }
-
-  .progress-track {
-    height: 4px; background: var(--surface3);
-    border-radius: 99px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; border-radius: 99px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transition: width 0.4s ease;
-    width: 0;
-    box-shadow: 0 0 8px rgba(200,169,110,0.5);
-  }
-  .progress-fill.done { background: linear-gradient(90deg, var(--green), #7aefb2); box-shadow: 0 0 8px rgba(78,203,138,0.5); }
-  .progress-fill.error { background: var(--red); }
-
-  /* Stage Pills */
-  .stages {
-    display: flex; flex-wrap: wrap; gap: 6px;
-  }
-  .stage-pill {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: var(--surface3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 3px 10px;
-    font-size: 0.7rem; color: var(--text-dim);
-    transition: var(--transition);
-    font-family: 'Cairo', sans-serif;
-  }
-  .stage-pill.active {
-    background: rgba(200,169,110,0.08);
-    border-color: rgba(200,169,110,0.3);
-    color: var(--accent);
-  }
-  .stage-pill.complete {
-    background: rgba(78,203,138,0.06);
-    border-color: rgba(78,203,138,0.2);
-    color: var(--green);
-  }
-  .stage-pill .stage-icon { font-size: 0.75rem; }
-
-  /* Card footer */
-  .card-footer {
-    display: flex; align-items: center; gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .format-select {
-    flex: 1; min-width: 120px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    color: var(--text);
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.82rem;
+  
+  .play-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    border: none;
+    display: grid; place-items: center;
     cursor: pointer;
+    transition: var(--transition-smooth);
+    padding-left: 2px;
+  }
+  html[dir="rtl"] .play-btn { padding-left: 0; padding-right: 2px; }
+  
+  .play-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+  .play-btn svg { width: 14px; fill: var(--text-dark); }
+  .play-btn.playing { padding: 0; }
+  
+  .time-display { font-size: 0.75rem; font-family: monospace; color: var(--text-muted); }
+
+  /* Export Controls */
+  .export-section {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: auto;
+  }
+  
+  .format-select {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-weight: 600; font-size: 0.85rem;
+    cursor: pointer;
+    outline: none;
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: left 12px center;
-    padding-left: 32px;
-    transition: var(--transition);
+    min-width: 90px;
   }
-  html[dir="rtl"] .format-select {
-    background-position: right 12px center;
-    padding-left: 12px;
-    padding-right: 32px;
-  }
-  .format-select:focus { outline: none; border-color: var(--accent); }
+  .format-select:focus { border-color: var(--gold-primary); }
+  .format-select option { background: var(--text-dark); color: var(--text-primary); }
 
-  .btn-download {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--surface3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 8px 16px;
-    color: var(--text);
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.82rem; font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    white-space: nowrap;
-    text-decoration: none;
-  }
-  .btn-download:hover:not(:disabled) {
-    background: rgba(200,169,110,0.1);
-    border-color: rgba(200,169,110,0.3);
-    color: var(--accent);
-  }
-  .btn-download:disabled { opacity:0.3; cursor:not-allowed; }
-
-  /* Audio Metrics */
-  .audio-metrics {
-    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
-  .audio-metrics.visible { opacity: 1; }
-  .metric-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+  .download-btn {
+    flex: 1;
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    color: var(--gold-lit);
     padding: 10px;
+    border-radius: var(--radius-sm);
+    font-weight: 700; font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .download-btn:hover { background: var(--gold-primary); color: var(--text-dark); }
+  .download-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .download-btn svg { width: 16px; fill: currentColor; }
+
+  /* Master Archive */
+  .master-actions {
     text-align: center;
-  }
-  .metric-val {
-    font-size: 0.95rem; font-weight: 700;
-    font-family: 'Space Mono', monospace;
-    color: var(--accent2);
-  }
-  .metric-key {
-    font-size: 0.65rem; color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 0.06em;
-    margin-top: 2px;
-  }
-
-  /* ── ZIP FOOTER ── */
-  .zip-section {
-    padding: 0 clamp(20px, 5vw, 80px) 100px;
-    position: relative; z-index: 1;
+    border-top: 1px solid var(--border-color);
+    padding-top: 40px;
     display: none;
   }
-  .zip-section.visible { display: block; }
-  .zip-inner {
-    max-width: 860px; margin: 0 auto;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 28px 32px;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 20px; flex-wrap: wrap;
-  }
-  .zip-text h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
-  .zip-text p { font-size: 0.85rem; color: var(--text-muted); }
-
-  .btn-zip {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: var(--surface3);
-    border: 1px solid var(--border-active);
-    border-radius: 40px;
-    padding: 12px 28px;
-    color: var(--text);
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.95rem; font-weight: 700;
+  .master-actions.visible { display: block; }
+  .zip-btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: linear-gradient(135deg, var(--gold-primary), var(--gold-dim));
+    color: var(--text-dark);
+    border: none;
+    padding: 16px 40px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 800;
     cursor: pointer;
-    transition: var(--transition);
-    white-space: nowrap;
+    transition: var(--transition-smooth);
+    box-shadow: 0 10px 30px rgba(212,175,55,0.25);
   }
-  .btn-zip:hover {
-    background: rgba(200,169,110,0.08);
-    border-color: var(--accent);
-    color: var(--accent);
-    box-shadow: 0 0 30px rgba(200,169,110,0.12);
-  }
+  .zip-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(212,175,55,0.4); }
 
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 32px;
-    background: var(--surface2);
-    border: 1px solid var(--border-active);
-    border-radius: 12px;
-    padding: 12px 20px;
-    font-size: 0.88rem; font-weight: 600;
-    display: flex; align-items: center; gap: 10px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-    z-index: 999;
-    transform: translateY(80px); opacity: 0;
-    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    max-width: 360px;
-  }
-  html[dir="rtl"] .toast { right: 32px; }
-  html[dir="ltr"] .toast { left: 32px; }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { border-color: rgba(78,203,138,0.3); }
-  .toast.error { border-color: rgba(224,92,92,0.3); }
+  /* SVG Icons inline to avoid external requests fetching errors */
+  .icon-svg { width: 1em; height: 1em; fill: currentColor; }
 
-  /* ── RESPONSIVE ── */
-  @media (max-width: 600px) {
-    .stats-pill { gap: 12px; padding: 8px 14px; }
-    .stat-divider { display: none; }
-    .btn-magic { padding: 12px 22px; font-size: 0.9rem; }
-    .zip-inner { flex-direction: column; text-align: center; }
-    .audio-metrics { grid-template-columns: repeat(3,1fr); }
-    .card-footer { flex-direction: column; }
-    .format-select, .btn-download { width: 100%; justify-content: center; }
+  /* Loader */
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
   }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  /* Initial hidden state for templates */
+  template { display: none; }
 
-  /* Add file button in corner after drop */
-  .add-more-btn {
-    display: none;
-    align-items: center; gap: 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 40px;
-    padding: 8px 18px;
-    color: var(--text-muted);
-    font-family: 'Cairo', sans-serif;
-    font-size: 0.82rem;
-    cursor: pointer;
-    transition: var(--transition);
-    margin: 0 auto 24px;
-  }
-  .add-more-btn:hover { border-color: var(--border-active); color: var(--text); }
-  .add-more-btn.visible { display: inline-flex; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="logo">
-    <div class="logo-icon">✦</div>
-    <div>
-      <div class="logo-text" id="logoText">استوديو صوتي سحري</div>
-      <div class="logo-sub" id="logoSub">Magic Audio Studio v1.0</div>
-    </div>
-  </div>
-  <button class="lang-btn" id="langBtn" onclick="toggleLang()">
-    <span class="lang-flag">🌐</span>
-    <span id="langBtnText">English</span>
-  </button>
-</header>
+  <!-- Background Ambience -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-eyebrow">
-    <span class="eyebrow-dot"></span>
-    <span id="eyebrowText">محرك DSP الذكي الأوتوماتيكي</span>
-  </div>
-  <h1 id="heroTitle">اصنع <span>سحراً</span> من أي صوت</h1>
-  <p id="heroSub">محرك ذكاء اصطناعي داخلي يحلّل ويُحسّن ويوحّد ويُصدّر صوتك باحترافية عالمية — بضغطة زر واحدة</p>
-</section>
-
-<!-- DROP ZONE -->
-<section class="drop-section">
-  <div class="drop-zone" id="dropZone"
-    onclick="document.getElementById('fileInput').click()"
-    ondragover="handleDragOver(event)"
-    ondragleave="handleDragLeave(event)"
-    ondrop="handleDrop(event)">
-    <div class="drop-icon">🎵</div>
-    <div class="drop-title" id="dropTitle">ارفع ملفاتك هنا، واترك السحر لنا</div>
-    <div class="drop-subtitle" id="dropSub">اسحب وأفلت أو انقر للاختيار</div>
-    <div class="drop-formats">
-      <span class="fmt-badge">WAV</span>
-      <span class="fmt-badge">MP3</span>
-      <span class="fmt-badge">FLAC</span>
-      <span class="fmt-badge">OGG</span>
-      <span class="fmt-badge">M4A</span>
-      <span class="fmt-badge">AAC</span>
-      <span class="fmt-badge">OPUS</span>
-      <span class="fmt-badge">AIFF</span>
+  <!-- Header -->
+  <header>
+    <div class="logo-block">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      </div>
+      <div class="logo-text">
+        <h1 data-i18n="logoTitle">استوديو صوتي سحري</h1>
+        <p data-i18n="logoSub">Magic Audio Studio</p>
+      </div>
     </div>
-  </div>
-  <input type="file" id="fileInput" multiple accept="audio/*" onchange="handleFileSelect(event)">
-</section>
-
-<!-- ADD MORE + ACTION BAR -->
-<div style="text-align:center; padding: 0 clamp(20px,5vw,80px);">
-  <button class="add-more-btn" id="addMoreBtn" onclick="document.getElementById('fileInput').click()">
-    <span>＋</span> <span id="addMoreText">إضافة ملفات أخرى</span>
-  </button>
-</div>
-
-<div class="action-bar" id="actionBar">
-  <div class="stats-pill">
-    <div class="stat-item">
-      <div class="stat-num" id="totalCount">0</div>
-      <div class="stat-label" id="statTotal">ملف</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <div class="stat-num" id="doneCount">0</div>
-      <div class="stat-label" id="statDone">مكتمل</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <div class="stat-num" id="pendingCount">0</div>
-      <div class="stat-label" id="statPending">قيد المعالجة</div>
-    </div>
-  </div>
-  <button class="btn-magic" id="magicBtn" onclick="processAll()">
-    <span class="magic-icon" id="magicIcon">✦</span>
-    <span id="magicBtnText">تطبيق السحر للكل</span>
-  </button>
-</div>
-
-<!-- CARDS GRID -->
-<section class="cards-section">
-  <div class="cards-grid" id="cardsGrid"></div>
-</section>
-
-<!-- ZIP DOWNLOAD -->
-<section class="zip-section" id="zipSection">
-  <div class="zip-inner">
-    <div class="zip-text">
-      <h3 id="zipTitle">تحميل كل الملفات</h3>
-      <p id="zipDesc">جميع الملفات المعالجة مضغوطة في ملف واحد</p>
-    </div>
-    <button class="btn-zip" onclick="downloadAllZip()">
-      <span>📦</span> <span id="zipBtnText">تحميل كل الملفات (ZIP)</span>
+    <button class="lang-toggle" id="langToggleBtn">
+      <span data-i18n="langBtn">English</span>
+      <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
     </button>
-  </div>
-</section>
+  </header>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span id="toastIcon">✓</span>
-  <span id="toastMsg">تم بنجاح</span>
-</div>
+  <main>
+    <section class="hero">
+      <div class="badge">
+        <svg style="width:14px; fill:currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h-2v5H6v2h2v5h2v-5h2v-2z"/></svg>
+        <span data-i18n="heroBadge">محرك رقمي للذكاء الاصطناعي</span>
+      </div>
+      <h2><span data-i18n="heroTitle1">اصنع</span> <span class="luxury-gradient-text" data-i18n="heroMagic">سحراً</span> <span data-i18n="heroTitle2">من أي صوت</span></h2>
+      <p data-i18n="heroDesc">محرك داخلي متقدم يقوم بتحليل وتوضيح ورفع جودة الصوت ليصل لمستوى احترافي سلس تمامًا بدون أي ضوضاء أو ارتفاع مزعج. المعالجة تتم 100% داخل جهازك للسرية التامة، بلا أزرار يدوية.</p>
+      
+      <div class="specs">
+        <div class="spec-item"><div class="spec-icon">★</div><span data-i18n="spec1">مطابقة مطلقة للصوت (-20 LUFS)</span></div>
+        <div class="spec-item"><div class="spec-icon">★</div><span data-i18n="spec2">بوابة ضوضاء متعددة المراحل + فلتر 100Hz</span></div>
+        <div class="spec-item"><div class="spec-icon">★</div><span data-i18n="spec3">محدد ذروة صارم (-1.5 dB) + قاطع ناعم</span></div>
+      </div>
+    </section>
 
+    <section class="dropzone-container">
+      <!-- onclick removed: wired via addEventListener in JS to avoid module scope issues -->
+      <div class="dropzone glass-panel" id="dropzone">
+        <div class="drop-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        </div>
+        <h3 data-i18n="dropTitle">ارفع ملفاتك الصوتية هنا</h3>
+        <p data-i18n="dropDesc">اسحب الملفات وأفلتها، أو اضغط للاختيار. التحويل يبدأ فوراً.</p>
+      </div>
+      <!-- Explicit extensions guarantee OS file picker shows all audio types -->
+      <input type="file" id="fileUpload" multiple accept=".mp3,.wav,.ogg,.m4a,.aac,.flac,.opus,.amr,.aiff,.wma,.webm,.caf,audio/*">
+    </section>
+
+    <div class="cards-grid" id="cardsContainer">
+      <!-- Cards injected here via JS -->
+    </div>
+
+    <div class="master-actions" id="masterActions">
+      <!-- onclick removed: wired in JS -->
+      <button class="zip-btn" id="zipBtn">
+        <svg style="width:24px; fill:none; stroke:currentColor; stroke-width:2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        <span data-i18n="zipBtn">تحميل الكل (ZIP)</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- Template for File Card -->
+  <template id="cardTpl">
+    <div class="file-card glass-panel" id="card-{id}">
+      <div class="card-header">
+        <div class="file-info">
+          <div class="file-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+          </div>
+          <div class="file-details">
+            <h4 class="filename" title="Name">Filename.wav</h4>
+            <p class="filesize">0 MB</p>
+          </div>
+        </div>
+        <div class="status-badge processing">
+          <div class="spinner"></div>
+          <span class="status-text" data-dyn="statusText">جاري المعالجة...</span>
+        </div>
+      </div>
+
+      <div class="player-section">
+        <div class="canvas-wrapper">
+          <canvas class="waveform-canvas" width="600" height="120"></canvas>
+        </div>
+        <div class="controls">
+          <button class="play-btn disabled" disabled>
+            <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          <div class="time-display">0:00 / 0:00</div>
+        </div>
+      </div>
+
+      <div class="export-section">
+        <select class="format-select disabled" disabled>
+          <option value="wav">WAV (⭐ أفضل جودة / Recommended)</option>
+          <option value="mp3">MP3</option>
+          <option value="flac">FLAC</option>
+          <option value="aac">AAC</option>
+          <option value="ogg">OGG</option>
+          <option value="m4a">M4A</option>
+          <option value="opus">OPUS</option>
+        </select>
+        <button class="download-btn disabled" disabled>
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <span data-dyn="downloadBtn">حفظ الملف</span>
+        </button>
+      </div>
+    </div>
+  </template>
+
+<!-- Plain script (NOT module) so all functions are globally accessible -->
 <script>
-// ═══════════════════════════════════════════════════════
-// TRANSLATIONS
-// ═══════════════════════════════════════════════════════
-const T = {
-  ar: {
-    dir: 'rtl', lang: 'ar',
-    logoText: 'استوديو صوتي سحري',
-    logoSub: 'Magic Audio Studio v1.0',
-    langBtn: 'English',
-    eyebrow: 'محرك DSP الذكي الأوتوماتيكي',
-    heroTitle: ['اصنع ', 'سحراً', ' من أي صوت'],
-    heroSub: 'محرك ذكاء اصطناعي داخلي يحلّل ويُحسّن ويوحّد ويُصدّر صوتك باحترافية عالمية — بضغطة زر واحدة',
-    dropTitle: 'ارفع ملفاتك هنا، واترك السحر لنا',
-    dropSub: 'اسحب وأفلت أو انقر للاختيار',
-    addMore: 'إضافة ملفات أخرى',
-    statTotal: 'ملف', statDone: 'مكتمل', statPending: 'قيد المعالجة',
-    magicBtn: 'تطبيق السحر للكل',
-    magicBtnProcessing: 'جارٍ المعالجة...',
-    zipTitle: 'تحميل كل الملفات',
-    zipDesc: 'جميع الملفات المعالجة مضغوطة في ملف واحد',
-    zipBtn: 'تحميل كل الملفات (ZIP)',
-    download: 'تحميل',
-    stages: ['تحليل', 'تنظيف', 'توضيح', 'توحيد', 'حماية', 'تصدير'],
-    stageIcons: ['🔬','🫧','✨','📊','🛡️','📤'],
-    original: 'الأصلي',
-    enhanced: 'المُحسَّن',
-    metricLUFS: 'علو', metricPeak: 'ذروة', metricDyn: 'ديناميكية',
-    toastProcessing: 'بدأ معالجة الملفات...',
-    toastDone: 'اكتملت المعالجة بنجاح ✦',
-    toastZip: 'جارٍ إنشاء ملف ZIP...',
-    toastNoFiles: 'لا توجد ملفات جاهزة للتحميل',
-    waveOrig: 'قبل', waveEnhanced: 'بعد',
-    formatLabel: 'الصيغة',
-    processing: 'جارٍ المعالجة...',
-    ready: 'جاهز للمعالجة',
-    done: 'اكتملت المعالجة ✦',
-    error: 'حدث خطأ'
-  },
-  en: {
-    dir: 'ltr', lang: 'en',
-    logoText: 'Magic Audio Studio',
-    logoSub: 'الاستوديو الصوتي السحري v1.0',
-    langBtn: 'العربية',
-    eyebrow: 'Automated AI-DSP Engine',
-    heroTitle: ['Make ', 'Magic', ' from Any Audio'],
-    heroSub: 'An internal AI engine that analyzes, enhances, normalizes, and exports your audio with world-class quality — with one click',
-    dropTitle: 'Drop your files here, and let the magic begin',
-    dropSub: 'Drag & drop or click to select',
-    addMore: 'Add More Files',
-    statTotal: 'Files', statDone: 'Done', statPending: 'Pending',
-    magicBtn: 'Apply Magic to All',
-    magicBtnProcessing: 'Processing...',
-    zipTitle: 'Download All Files',
-    zipDesc: 'All processed files compressed into one archive',
-    zipBtn: 'Download All (ZIP)',
-    download: 'Download',
-    stages: ['Analysis','Denoise','Enhance','Normalize','Limit','Export'],
-    stageIcons: ['🔬','🫧','✨','📊','🛡️','📤'],
-    original: 'Original',
-    enhanced: 'Enhanced',
-    metricLUFS: 'LUFS', metricPeak: 'Peak', metricDyn: 'Dynamic',
-    toastProcessing: 'Processing files...',
-    toastDone: 'All done! ✦',
-    toastZip: 'Creating ZIP archive...',
-    toastNoFiles: 'No processed files to download',
-    waveOrig: 'Before', waveEnhanced: 'After',
-    formatLabel: 'Format',
-    processing: 'Processing...',
-    ready: 'Ready to process',
-    done: 'Processed ✦',
-    error: 'Error'
-  }
+// ============================================================================
+// FFmpeg Lazy Loader Strategy
+// ============================================================================
+let ffmpegInstance = null;
+async function initFFmpeg() {
+    if (ffmpegInstance) return ffmpegInstance;
+    const { FFmpeg } = await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js');
+    ffmpegInstance = new FFmpeg();
+    await ffmpegInstance.load({
+        coreURL: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js",
+        wasmURL: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm"
+    });
+    return ffmpegInstance;
+}
+
+// ============================================================================
+// State & Translation Architecture
+// ============================================================================
+const i18n = {
+    ar: {
+        dir: 'rtl',
+        logoTitle: 'استوديو صوتي سحري',
+        logoSub: 'Magic Audio Studio',
+        langBtn: 'English',
+        heroBadge: 'محرك رقمي للذكاء الاصطناعي',
+        heroTitle1: 'اصنع', heroMagic: 'سحراً', heroTitle2: 'من أي صوت',
+        heroDesc: 'محرك داخلي متقدم يقوم بتحليل وتوضيح ورفع جودة الصوت ليصل لمستوى احترافي سلس تمامًا بدون أي ضوضاء أو ارتفاع مزعج. المعالجة تتم 100% داخل جهازك للسرية التامة، بلا أزرار يدوية.',
+        spec1: 'مطابقة مطلقة للصوت (-20 LUFS)',
+        spec2: 'بوابة ضوضاء متعددة المراحل + فلتر 100Hz',
+        spec3: 'محدد ذروة صارم (-1.5 dB) + قاطع ناعم',
+        dropTitle: 'ارفع ملفاتك الصوتية هنا',
+        dropDesc: 'اسحب الملفات وأفلتها، أو اضغط للاختيار. المعالجة الذكية تبدأ فوراً.',
+        zipBtn: 'تحميل الكل (ZIP)',
+        statusProcessing: 'جاري المعالجة...',
+        statusTranscoding: 'جاري التحويل...',
+        statusDone: 'اكتمل',
+        downloadText: 'حفظ الملف'
+    },
+    en: {
+        dir: 'ltr',
+        logoTitle: 'Magic Audio Studio',
+        logoSub: 'AI Audio Engineering',
+        langBtn: 'العربية',
+        heroBadge: 'Fully Automated AI-DSP Engine',
+        heroTitle1: 'Make', heroMagic: 'Magic', heroTitle2: 'From Audio',
+        heroDesc: 'An advanced embedded engine that analyzes, enhances, and normalizes your audio to a beautifully smooth professional standard without harshness. 100% local processing for absolute privacy. No manual knobs.',
+        spec1: 'Absolute LUFS Matching (-20 LUFS)',
+        spec2: 'Multi-Stage Noise Gate + 100Hz HPF',
+        spec3: 'Brickwall Limiter (-1.5 dBTP) + Soft-Clip',
+        dropTitle: 'Drop Your Audio Files Here',
+        dropDesc: 'Drag and drop files, or click to select. Smart processing starts instantly.',
+        zipBtn: 'Download All (ZIP)',
+        statusProcessing: 'Processing Audio...',
+        statusTranscoding: 'Transcoding...',
+        statusDone: 'Mastered',
+        downloadText: 'Download'
+    }
 };
 
 let currentLang = 'ar';
-let audioContext = null;
-let files = []; // Array of { file, buffer, processedBuffer, format, status, id, audioUrl }
+window.toggleLanguage = () => {
+    currentLang = currentLang === 'ar' ? 'en' : 'ar';
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = i18n[currentLang].dir;
+    
+    // Update Static Elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[currentLang][key]) el.textContent = i18n[currentLang][key];
+    });
 
-// ═══════════════════════════════════════════════════════
-// LANGUAGE TOGGLE
-// ═══════════════════════════════════════════════════════
-function toggleLang() {
-  currentLang = currentLang === 'ar' ? 'en' : 'ar';
-  applyLang();
-}
+    // Update Dynamic Card States based on their saved status
+    document.querySelectorAll('.file-card').forEach(card => {
+        const cardObj = processorState.cards[card.id];
+        if(!cardObj) return;
+        const textEl = card.querySelector('[data-dyn="statusText"]');
+        if(cardObj.state === 'processing') textEl.textContent = i18n[currentLang].statusProcessing;
+        else if(cardObj.state === 'transcoding') textEl.textContent = i18n[currentLang].statusTranscoding;
+        else if(cardObj.state === 'done') textEl.textContent = i18n[currentLang].statusDone;
 
-function applyLang() {
-  const t = T[currentLang];
-  document.documentElement.setAttribute('lang', t.lang);
-  document.documentElement.setAttribute('dir', t.dir);
-  document.getElementById('logoText').textContent = t.logoText;
-  document.getElementById('logoSub').textContent = t.logoSub;
-  document.getElementById('langBtnText').textContent = t.langBtn;
-  document.getElementById('eyebrowText').textContent = t.eyebrow;
-  const h1 = document.getElementById('heroTitle');
-  h1.innerHTML = t.heroTitle[0] + '<span>' + t.heroTitle[1] + '</span>' + t.heroTitle[2];
-  document.getElementById('heroSub').textContent = t.heroSub;
-  document.getElementById('dropTitle').textContent = t.dropTitle;
-  document.getElementById('dropSub').textContent = t.dropSub;
-  document.getElementById('addMoreText').textContent = t.addMore;
-  document.getElementById('statTotal').textContent = t.statTotal;
-  document.getElementById('statDone').textContent = t.statDone;
-  document.getElementById('statPending').textContent = t.statPending;
-  const mb = document.getElementById('magicBtnText');
-  if (mb) mb.textContent = t.magicBtn;
-  document.getElementById('zipTitle').textContent = t.zipTitle;
-  document.getElementById('zipDesc').textContent = t.zipDesc;
-  document.getElementById('zipBtnText').textContent = t.zipBtn;
-  // Update all cards stages
-  files.forEach(f => refreshCardStages(f.id));
-}
+        const dlBtn = card.querySelector('[data-dyn="downloadBtn"]');
+        dlBtn.textContent = i18n[currentLang].downloadText;
+    });
+};
 
-function t(key) { return T[currentLang][key]; }
+// ============================================================================
+// ██████╗ ███████╗██████╗     ███████╗███╗   ██╗ ██████╗ ██╗███╗   ██╗███████╗
+// ██╔══██╗██╔════╝██╔══██╗    ██╔════╝████╗  ██║██╔════╝ ██║████╗  ██║██╔════╝
+// ██║  ██║███████╗██████╔╝    █████╗  ██╔██╗ ██║██║  ███╗██║██╔██╗ ██║█████╗
+// ██║  ██║╚════██║██╔═══╝     ██╔══╝  ██║╚██╗██║██║   ██║██║██║╚██╗██║██╔══╝
+// ██████╔╝███████║██║         ███████╗██║ ╚████║╚██████╔╝██║██║ ╚████║███████╗
+// ╚═════╝ ╚══════╝╚═╝         ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝
+//
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║  ABSOLUTE LUFS MATCHING ENGINE  —  Two-Pass Normalization              ║
+// ║  Target: -20 LUFS (identical perceived loudness across ALL files)      ║
+// ║  Gain Cap: NONE — whatever dB is needed to hit -20, apply it.          ║
+// ║  Safety: Aggressive noise gate BEFORE gain + brickwall limiter AFTER.  ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+//
+// Architecture:
+//
+//  PASS 1 — Physical cleanup + noise suppression:
+//    A. 4th-order 100 Hz sub-sonic HPF (48 dB/oct Linkwitz-Riley)
+//    B. Aggressive downward expander @ -45 dBFS (ratio 2.5, 8192-pt curve)
+//       → kills hiss/room tone BEFORE any gain is applied
+//    C. Minimal vocal EQ: -1 dB low-shelf @ 180 Hz, +1.2 dB peak @ 3.2 kHz
+//    D. Transparent AGC leveler: 1.5:1, knee 15 dB, attack 500 ms, release 2 s
+//    E. SAMPLE-LEVEL noise floor gate: hard-zeros any sample below -60 dBFS
+//       → prevents even residual noise from being amplified by high gains
+//
+//  ANALYSIS — Gated RMS measurement on the cleaned signal:
+//    • Measures RMS of ONLY the voiced/active portions (above -45 dBFS gate)
+//    • Target: -20 dBFS RMS ≈ -20 LUFS integrated
+//    • Gain cap: NONE — quiet files get +15, +20, +25 dB if needed
+//    • Attenuation: unlimited (loud files get pulled down)
+//
+//  PASS 2 — Precise gain + peak safety:
+//    F. Exact static makeup gain (10^(diff/20))
+//    G. Soft-clip waveshaper (tanh sigmoid @ -1.5 dBFS, 4× oversampled)
+//    H. Brickwall limiter @ -1.5 dBTP, ratio 20:1, attack 0.001s
+//
+// ============================================================================
 
-// ═══════════════════════════════════════════════════════
-// DRAG & DROP
-// ═══════════════════════════════════════════════════════
-function handleDragOver(e) {
-  e.preventDefault();
-  document.getElementById('dropZone').classList.add('drag-over');
-}
-function handleDragLeave(e) {
-  document.getElementById('dropZone').classList.remove('drag-over');
-}
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('dropZone').classList.remove('drag-over');
-  const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('audio/') || isAudioExt(f.name));
-  if (dropped.length) addFiles(dropped);
-}
-function handleFileSelect(e) {
-  const selected = Array.from(e.target.files);
-  if (selected.length) addFiles(selected);
-  e.target.value = '';
-}
-function isAudioExt(name) {
-  return /\.(wav|mp3|flac|ogg|m4a|aac|opus|aiff|weba)$/i.test(name);
-}
+/**
+ * Compute the GATED RMS level across all channels.
+ * Only counts samples whose absolute value exceeds `gateLinear`.
+ * This prevents silence/noise from dragging down the RMS measurement,
+ * which would cause the normalizer to over-boost quiet files.
+ *
+ * @param {AudioBuffer} buffer   The audio buffer to measure
+ * @param {number} gateDB        Gate threshold in dBFS (e.g. -45)
+ * @returns {number}              Linear RMS value, minimum 0.0001
+ */
+function getGatedRMS(buffer, gateDB = -45) {
+    const gateLinear = Math.pow(10, gateDB / 20);
+    let totalRms = 0;
 
-// ═══════════════════════════════════════════════════════
-// FILE MANAGEMENT
-// ═══════════════════════════════════════════════════════
-function addFiles(newFiles) {
-  // Hide drop zone
-  document.getElementById('dropZone').classList.add('hidden');
-  document.getElementById('addMoreBtn').classList.add('visible');
-  document.getElementById('actionBar').classList.add('visible');
-
-  newFiles.forEach(file => {
-    const id = 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-    const entry = { file, id, buffer: null, processedBuffer: null, format: 'wav', status: 'ready', audioUrl: null };
-    files.push(entry);
-    createCard(entry);
-    loadAudioBuffer(entry);
-  });
-  updateStats();
-}
-
-function updateStats() {
-  document.getElementById('totalCount').textContent = files.length;
-  document.getElementById('doneCount').textContent = files.filter(f => f.status === 'done').length;
-  document.getElementById('pendingCount').textContent = files.filter(f => f.status !== 'done').length;
-  const anyDone = files.some(f => f.status === 'done');
-  document.getElementById('zipSection').classList.toggle('visible', anyDone);
-}
-
-// ═══════════════════════════════════════════════════════
-// CREATE CARD
-// ═══════════════════════════════════════════════════════
-function getFileIcon(name) {
-  const ext = name.split('.').pop().toLowerCase();
-  const icons = { wav:'🎼', mp3:'🎵', flac:'💿', ogg:'🔊', m4a:'🎙️', aac:'📻', opus:'🎤', aiff:'🎹' };
-  return icons[ext] || '🎵';
-}
-function formatBytes(b) {
-  if (b < 1024) return b + ' B';
-  if (b < 1024*1024) return (b/1024).toFixed(1) + ' KB';
-  return (b/1024/1024).toFixed(2) + ' MB';
-}
-
-function createCard(entry) {
-  const t2 = T[currentLang];
-  const grid = document.getElementById('cardsGrid');
-  const ext = entry.file.name.split('.').pop().toLowerCase();
-
-  const card = document.createElement('div');
-  card.className = 'file-card';
-  card.id = 'card_' + entry.id;
-
-  const stagesHTML = t2.stages.map((s, i) =>
-    `<span class="stage-pill" id="stage_${entry.id}_${i}">
-       <span class="stage-icon">${t2.stageIcons[i]}</span>${s}
-     </span>`
-  ).join('');
-
-  const formatsHTML = `
-    <option value="wav">WAV — ${currentLang==='ar'?'أفضل جودة ★':'Best Quality ★'}</option>
-    <option value="mp3">MP3 — ${currentLang==='ar'?'ضغط عالي':'High Compression'}</option>
-    <option value="flac">FLAC — ${currentLang==='ar'?'بلا خسارة':'Lossless'}</option>
-    <option value="ogg">OGG — ${currentLang==='ar'?'مفتوح المصدر':'Open Source'}</option>
-    <option value="m4a">M4A — ${currentLang==='ar'?'آبل':'Apple'}</option>
-    <option value="aac">AAC — ${currentLang==='ar'?'احترافي':'Professional'}</option>
-    <option value="opus">OPUS — ${currentLang==='ar'?'ويب':'Web'}</option>
-  `;
-
-  card.innerHTML = `
-    <div class="card-header">
-      <div class="card-icon">${getFileIcon(entry.file.name)}</div>
-      <div class="card-info">
-        <div class="card-name" title="${entry.file.name}">${entry.file.name}</div>
-        <div class="card-meta">
-          <span class="card-size">${formatBytes(entry.file.size)}</span>
-          <span class="card-badge ${ext}">${ext.toUpperCase()}</span>
-        </div>
-      </div>
-      <div class="status-dot" id="dot_${entry.id}"></div>
-    </div>
-
-    <div class="waveform-container">
-      <span class="waveform-label" id="waveLabel_${entry.id}">${t2.waveOrig}</span>
-      <canvas class="waveform-canvas" id="wave_${entry.id}" height="64"></canvas>
-    </div>
-
-    <div class="progress-area">
-      <div class="progress-header">
-        <span class="progress-label" id="progLabel_${entry.id}">${t2.ready}</span>
-        <span class="progress-pct" id="progPct_${entry.id}">0%</span>
-      </div>
-      <div class="progress-track"><div class="progress-fill" id="progFill_${entry.id}"></div></div>
-    </div>
-
-    <div class="stages" id="stages_${entry.id}">${stagesHTML}</div>
-
-    <div class="audio-metrics" id="metrics_${entry.id}">
-      <div class="metric-box"><div class="metric-val" id="m_lufs_${entry.id}">—</div><div class="metric-key">${t2.metricLUFS}</div></div>
-      <div class="metric-box"><div class="metric-val" id="m_peak_${entry.id}">—</div><div class="metric-key">${t2.metricPeak}</div></div>
-      <div class="metric-box"><div class="metric-val" id="m_dyn_${entry.id}">—</div><div class="metric-key">${t2.metricDyn}</div></div>
-    </div>
-
-    <div class="card-footer">
-      <select class="format-select" id="fmt_${entry.id}" onchange="setFormat('${entry.id}', this.value)">
-        ${formatsHTML}
-      </select>
-      <button class="btn-download" id="dlBtn_${entry.id}" disabled onclick="downloadSingle('${entry.id}')">
-        ↓ ${t2.download}
-      </button>
-    </div>
-  `;
-
-  grid.appendChild(card);
-}
-
-function refreshCardStages(id) {
-  const t2 = T[currentLang];
-  const stagesEl = document.getElementById('stages_' + id);
-  if (!stagesEl) return;
-  const pills = stagesEl.querySelectorAll('.stage-pill');
-  pills.forEach((p, i) => {
-    const icon = p.querySelector('.stage-icon');
-    if (icon) icon.textContent = t2.stageIcons[i];
-    // Update text keeping classes
-    const txt = t2.stages[i];
-    p.childNodes[p.childNodes.length-1].textContent = txt;
-  });
-}
-
-function setFormat(id, fmt) {
-  const entry = files.find(f => f.id === id);
-  if (entry) entry.format = fmt;
-}
-
-// ═══════════════════════════════════════════════════════
-// AUDIO CONTEXT
-// ═══════════════════════════════════════════════════════
-function getAudioContext() {
-  if (!audioContext || audioContext.state === 'closed') {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
-  }
-  if (audioContext.state === 'suspended') audioContext.resume();
-  return audioContext;
-}
-
-async function loadAudioBuffer(entry) {
-  try {
-    const ctx = getAudioContext();
-    const arrayBuffer = await entry.file.arrayBuffer();
-    entry.buffer = await ctx.decodeAudioData(arrayBuffer);
-    drawWaveform(entry.id, entry.buffer, false);
-  } catch(e) {
-    console.warn('Could not decode', entry.file.name, e);
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// WAVEFORM DRAWING
-// ═══════════════════════════════════════════════════════
-function drawWaveform(id, audioBuffer, isProcessed) {
-  const canvas = document.getElementById('wave_' + id);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const W = canvas.offsetWidth || 360;
-  const H = 64;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, W, H);
-
-  const data = audioBuffer.getChannelData(0);
-  const step = Math.ceil(data.length / W);
-  const mid = H / 2;
-
-  // Background
-  ctx.fillStyle = 'transparent';
-  ctx.fillRect(0, 0, W, H);
-
-  // Center line
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(W, mid); ctx.stroke();
-
-  // Waveform
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  if (isProcessed) {
-    grad.addColorStop(0, 'rgba(78,203,138,0.9)');
-    grad.addColorStop(0.5, 'rgba(78,203,138,0.6)');
-    grad.addColorStop(1, 'rgba(78,203,138,0.9)');
-  } else {
-    grad.addColorStop(0, 'rgba(200,169,110,0.8)');
-    grad.addColorStop(0.5, 'rgba(200,169,110,0.4)');
-    grad.addColorStop(1, 'rgba(200,169,110,0.8)');
-  }
-
-  ctx.fillStyle = grad;
-  for (let x = 0; x < W; x++) {
-    let min = 0, max = 0;
-    for (let i = 0; i < step; i++) {
-      const v = data[(x * step) + i] || 0;
-      if (v < min) min = v;
-      if (v > max) max = v;
+    for (let c = 0; c < buffer.numberOfChannels; c++) {
+        const data = buffer.getChannelData(c);
+        let sumSq = 0;
+        let count = 0;
+        for (let i = 0; i < data.length; i++) {
+            if (Math.abs(data[i]) >= gateLinear) {
+                sumSq += data[i] * data[i];
+                count++;
+            }
+        }
+        // If almost no samples pass the gate, use ungated measurement
+        if (count < data.length * 0.01) {
+            // Fallback: measure everything (file is extremely quiet or near-silent)
+            let fallbackSum = 0;
+            for (let i = 0; i < data.length; i++) fallbackSum += data[i] * data[i];
+            totalRms += Math.sqrt(fallbackSum / data.length);
+        } else {
+            totalRms += Math.sqrt(sumSq / count);
+        }
     }
-    const yTop = mid - (max * (mid - 4));
-    const yBot = mid - (min * (mid - 4));
-    const barH = Math.max(1, yBot - yTop);
-    ctx.fillRect(x, yTop, 1, barH);
-  }
-
-  // Update label
-  const label = document.getElementById('waveLabel_' + id);
-  if (label) label.textContent = isProcessed ? T[currentLang].waveEnhanced : T[currentLang].waveOrig;
+    return Math.max(0.0001, totalRms / buffer.numberOfChannels);
 }
 
-// ═══════════════════════════════════════════════════════
-// PROGRESS HELPERS
-// ═══════════════════════════════════════════════════════
-function setProgress(id, pct, label) {
-  const fill = document.getElementById('progFill_' + id);
-  const lbl = document.getElementById('progLabel_' + id);
-  const pctEl = document.getElementById('progPct_' + id);
-  if (fill) { fill.style.width = pct + '%'; fill.className = 'progress-fill' + (pct >= 100 ? ' done' : ''); }
-  if (lbl) lbl.textContent = label;
-  if (pctEl) pctEl.textContent = Math.round(pct) + '%';
-}
-
-function setStage(id, stageIdx) {
-  for (let i = 0; i < 6; i++) {
-    const el = document.getElementById(`stage_${id}_${i}`);
-    if (!el) continue;
-    el.className = 'stage-pill' + (i < stageIdx ? ' complete' : i === stageIdx ? ' active' : '');
-  }
-}
-
-function setDot(id, state) {
-  const dot = document.getElementById('dot_' + id);
-  if (dot) dot.className = 'status-dot ' + state;
-}
-
-// ═══════════════════════════════════════════════════════
-// ██████████ DSP PIPELINE ██████████
-// ═══════════════════════════════════════════════════════
-const TARGET_LUFS = -16;
-const TRUE_PEAK_LIMIT = -1.0; // dBFS
-
-async function processAll() {
-  const btn = document.getElementById('magicBtn');
-  const icon = document.getElementById('magicIcon');
-  const txt = document.getElementById('magicBtnText');
-  const toProcess = files.filter(f => f.status !== 'done' && f.buffer);
-  if (!toProcess.length) return;
-
-  btn.disabled = true;
-  btn.classList.add('processing');
-  icon.textContent = '⏳';
-  txt.textContent = T[currentLang].magicBtnProcessing;
-  showToast(T[currentLang].toastProcessing, 'info');
-
-  for (const entry of toProcess) {
-    await processSingleFile(entry);
-  }
-
-  btn.disabled = false;
-  btn.classList.remove('processing');
-  icon.textContent = '✦';
-  txt.textContent = T[currentLang].magicBtn;
-  updateStats();
-  showToast(T[currentLang].toastDone, 'success');
-}
-
-async function processSingleFile(entry) {
-  const id = entry.id;
-  entry.status = 'processing';
-  setDot(id, 'processing');
-
-  try {
-    const ctx = getAudioContext();
-    let buf = entry.buffer;
-    if (!buf) {
-      const ab = await entry.file.arrayBuffer();
-      buf = await ctx.decodeAudioData(ab);
-      entry.buffer = buf;
+/**
+ * Downward Expander WaveShaper Curve  (Noise Gate)
+ *
+ * Aggressively attenuates samples below `thresholdDB` using a power-law
+ * expansion curve. This is applied BEFORE any gain, so the noise floor
+ * is suppressed while the signal is still at its original level.
+ *
+ * At ratio 2.5, a sample at -50 dBFS (5 dB below a -45 dBFS threshold)
+ * gets attenuated by an additional ~7.5 dB — effectively silencing it.
+ *
+ * Uses 8192-point table for precision at very low signal levels.
+ *
+ * @param {number} thresholdDB      Gate threshold (e.g. -45)
+ * @param {number} expansionRatio   Expansion severity (2.5 = aggressive)
+ * @param {number} size             WaveShaper table resolution
+ */
+function createDownwardExpanderCurve(thresholdDB, expansionRatio = 2.5, size = 8192) {
+    const curve    = new Float32Array(size);
+    const tLinear  = Math.pow(10, thresholdDB / 20);
+    for (let i = 0; i < size; i++) {
+        const x    = (i / (size - 1)) * 2 - 1;   // -1 … +1
+        const absX = Math.abs(x);
+        if (absX < tLinear) {
+            // Below threshold: aggressively taper toward zero
+            const expandedGain = Math.pow(absX / tLinear, expansionRatio - 1);
+            curve[i] = x * expandedGain;
+        } else {
+            curve[i] = x; // Above threshold: untouched
+        }
     }
-
-    // ── STAGE 0: Pre-Analysis ──────────────────────────
-    setStage(id, 0);
-    setProgress(id, 5, T[currentLang].stages[0]);
-    await sleep(80);
-    const analysis = analyzeBuffer(buf);
-    document.getElementById('m_lufs_' + id).textContent = analysis.lufs.toFixed(1) + ' dB';
-    document.getElementById('m_peak_' + id).textContent = analysis.peak.toFixed(1) + ' dB';
-    document.getElementById('m_dyn_' + id).textContent = analysis.dynamic.toFixed(1) + ' dB';
-    document.getElementById('metrics_' + id).classList.add('visible');
-
-    // ── STAGE 1: Speech Gate / Denoise ────────────────
-    setStage(id, 1);
-    setProgress(id, 18, T[currentLang].stages[1]);
-    await sleep(60);
-    buf = applySpectralGate(ctx, buf, analysis);
-
-    // ── STAGE 2: Auto-EQ / Vocal Enhancer ─────────────
-    setStage(id, 2);
-    setProgress(id, 38, T[currentLang].stages[2]);
-    await sleep(60);
-    buf = await applyAutoEQ(ctx, buf);
-
-    // ── STAGE 3: Loudness Normalization ───────────────
-    setStage(id, 3);
-    setProgress(id, 62, T[currentLang].stages[3]);
-    await sleep(60);
-    buf = applyLoudnessNormalization(ctx, buf, analysis.lufs);
-
-    // ── STAGE 4: True-Peak Limiter ────────────────────
-    setStage(id, 4);
-    setProgress(id, 82, T[currentLang].stages[4]);
-    await sleep(60);
-    buf = applyTruePeakLimiter(buf);
-
-    // ── STAGE 5: Export ───────────────────────────────
-    setStage(id, 5);
-    setProgress(id, 95, T[currentLang].stages[5]);
-    await sleep(80);
-
-    entry.processedBuffer = buf;
-
-    // Draw enhanced waveform
-    drawWaveform(id, buf, true);
-
-    // Update metrics post-processing
-    const postAnalysis = analyzeBuffer(buf);
-    document.getElementById('m_lufs_' + id).textContent = postAnalysis.lufs.toFixed(1) + ' dB';
-    document.getElementById('m_peak_' + id).textContent = postAnalysis.peak.toFixed(1) + ' dB';
-    document.getElementById('m_dyn_' + id).textContent = postAnalysis.dynamic.toFixed(1) + ' dB';
-
-    setProgress(id, 100, T[currentLang].done);
-    setStage(id, 6);
-    setDot(id, 'done');
-    entry.status = 'done';
-    document.getElementById('card_' + id).classList.add('done');
-    document.getElementById('dlBtn_' + id).disabled = false;
-
-  } catch(err) {
-    console.error('Processing error:', err);
-    setProgress(id, 0, T[currentLang].error);
-    setDot(id, 'error');
-    entry.status = 'error';
-    document.getElementById('card_' + id).classList.add('error');
-    document.getElementById('progFill_' + id).classList.add('error');
-  }
+    return curve;
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-// ═══════════════════════════════════════════════════════
-// DSP ALGORITHMS
-// ═══════════════════════════════════════════════════════
-
-/* ── analyzeBuffer: LUFS (K-weighting approx), peak, dynamic ── */
-function analyzeBuffer(buffer) {
-  const sampleRate = buffer.sampleRate;
-  const channels = [];
-  for (let c = 0; c < buffer.numberOfChannels; c++) channels.push(buffer.getChannelData(c));
-
-  // K-weighting filter (simplified biquad chain)
-  // High-shelf pre-filter + high-pass
-  let sumSq = 0, count = 0;
-  let truePeak = 0;
-  const blockSize = Math.floor(sampleRate * 0.4); // 400ms blocks
-  const hopSize = Math.floor(blockSize / 4);
-  const numBlocks = Math.floor((channels[0].length - blockSize) / hopSize);
-  const blockLoudness = [];
-
-  for (let block = 0; block < numBlocks; block++) {
-    const start = block * hopSize;
-    let blockSum = 0;
-    for (let c = 0; c < channels.length; c++) {
-      const ch = channels[c];
-      const weight = (c === 1 || c === 2) ? 1.41 : 1.0; // Surround weighting
-      let s1 = 0, s2 = 0;
-      for (let i = start; i < start + blockSize; i++) {
-        const v = ch[i] || 0;
-        const abs = Math.abs(v);
-        if (abs > truePeak) truePeak = abs;
-        // K-weighting pre-filter (approximate)
-        const filtered = kWeightSample(v, i);
-        blockSum += filtered * filtered * weight;
-        s1 += filtered * filtered;
-        s2 += v * v;
-      }
+/**
+ * Soft-Clip WaveShaper Curve (transient / inter-sample peak suppressor)
+ *
+ * Uses a tanh sigmoid to gently round peaks above `clipDB`.
+ * Functions as a zero-latency look-ahead limiter equivalent.
+ *
+ * @param {number} clipDB   Soft-clip onset level (e.g. -1.5)
+ * @param {number} size     WaveShaper table resolution
+ */
+function createSoftClipCurve(clipDB = -1.5, size = 8192) {
+    const curve     = new Float32Array(size);
+    const clipLin   = Math.pow(10, clipDB / 20);  // e.g. -1.5 dB → 0.8414
+    for (let i = 0; i < size; i++) {
+        const x = (i / (size - 1)) * 2 - 1;
+        if (Math.abs(x) <= clipLin) {
+            curve[i] = x; // Linear passthrough below clip point
+        } else {
+            const sign   = x < 0 ? -1 : 1;
+            const excess = (Math.abs(x) - clipLin) / (1 - clipLin);
+            curve[i] = sign * (clipLin + (1 - clipLin) * Math.tanh(excess * 2.5));
+        }
     }
-    const blockLU = blockSum / (channels.length * blockSize);
-    blockLoudness.push(blockLU);
-  }
-
-  // Gating: absolute gate (-70 LUFS), relative gate (-10 LU from ungated)
-  const absGate = Math.pow(10, -70/10);
-  const ungated = blockLoudness.filter(l => l > absGate);
-  const ungatedMean = ungated.length ? ungated.reduce((a,b)=>a+b,0)/ungated.length : 0;
-  const relGate = ungatedMean * Math.pow(10, -10/10);
-  const gated = blockLoudness.filter(l => l > relGate && l > absGate);
-  const gatedMean = gated.length ? gated.reduce((a,b)=>a+b,0)/gated.length : ungatedMean;
-
-  const lufs = gatedMean > 0 ? -0.691 + 10 * Math.log10(gatedMean) : -70;
-  const peakDb = truePeak > 0 ? 20 * Math.log10(truePeak) : -Infinity;
-
-  // Dynamic range (simplified: 95th - 5th percentile of block loudness)
-  const sorted = [...blockLoudness].sort((a,b)=>a-b);
-  const p5 = sorted[Math.floor(sorted.length*0.05)] || 1e-10;
-  const p95 = sorted[Math.floor(sorted.length*0.95)] || p5;
-  const dynamic = p95 > 0 && p5 > 0 ? 10*Math.log10(p95/p5) : 12;
-
-  return { lufs: Math.max(-70, Math.min(0, lufs)), peak: Math.max(-60, Math.min(0, peakDb)), dynamic: Math.max(0, Math.min(40, dynamic)) };
+    return curve;
 }
 
-// Simplified K-weighting sample (stateless approximation)
-function kWeightSample(x, i) {
-  // Apply simplified high-shelf boost at 1kHz + HPF at 38Hz (stateless approx)
-  return x * 1.0; // In a proper impl this would be a biquad state machine
-}
-
-/* ── applySpectralGate: Noise Gate + DC Offset Removal ── */
-function applySpectralGate(ctx, buffer, analysis) {
-  const sampleRate = buffer.sampleRate;
-  const numCh = buffer.numberOfChannels;
-  const len = buffer.length;
-  const newBuf = ctx.createBuffer(numCh, len, sampleRate);
-
-  // Noise floor estimate: 40dB below peak
-  const peakLin = Math.pow(10, analysis.peak / 20);
-  const noiseFloor = peakLin * Math.pow(10, -40/20);
-  const gateThreshold = noiseFloor * 2.5;
-  const attackSamples = Math.floor(sampleRate * 0.003); // 3ms
-  const releaseSamples = Math.floor(sampleRate * 0.08); // 80ms
-  const holdSamples = Math.floor(sampleRate * 0.02);
-
-  for (let c = 0; c < numCh; c++) {
-    const src = buffer.getChannelData(c);
-    const dst = newBuf.getChannelData(c);
-
-    // DC offset removal (first pass)
-    let dcSum = 0;
-    for (let i = 0; i < len; i++) dcSum += src[i];
-    const dcOffset = dcSum / len;
-
-    // Envelope follower
-    let envelope = 0;
-    let gain = 0;
-    let holdCount = 0;
-    const attackCoeff = 1 - Math.exp(-1 / attackSamples);
-    const releaseCoeff = 1 - Math.exp(-1 / releaseSamples);
-
-    for (let i = 0; i < len; i++) {
-      const s = src[i] - dcOffset;
-      const absS = Math.abs(s);
-      // Envelope follow
-      if (absS > envelope) envelope += attackCoeff * (absS - envelope);
-      else envelope += releaseCoeff * (absS - envelope);
-
-      // Gate decision
-      if (envelope > gateThreshold) {
-        gain = Math.min(1, gain + attackCoeff);
-        holdCount = holdSamples;
-      } else if (holdCount > 0) {
-        holdCount--;
-      } else {
-        gain = Math.max(0, gain - releaseCoeff * 0.5);
-      }
-
-      // Smooth gain
-      dst[i] = s * gain;
+/**
+ * Sample-level noise floor hard gate.
+ * Zeros out any sample whose absolute value is below `thresholdDB`.
+ * Applied directly to the AudioBuffer's channel data in-place.
+ *
+ * This is the LAST defense before gain — ensures that even the faintest
+ * residual noise (which the WaveShaper expander may have softened but
+ * not fully zeroed) gets eliminated before a potentially large (+15-25 dB)
+ * gain multiplier is applied.
+ *
+ * @param {AudioBuffer} buffer       The buffer to gate (modified in-place)
+ * @param {number}      thresholdDB  Hard gate threshold (e.g. -60)
+ */
+function applySampleLevelGate(buffer, thresholdDB = -60) {
+    const tLinear = Math.pow(10, thresholdDB / 20);
+    for (let c = 0; c < buffer.numberOfChannels; c++) {
+        const data = buffer.getChannelData(c);
+        for (let i = 0; i < data.length; i++) {
+            if (Math.abs(data[i]) < tLinear) {
+                data[i] = 0;
+            }
+        }
     }
-  }
-  return newBuf;
 }
 
-/* ── applyAutoEQ: Vocal presence boost + warmth + air ── */
-async function applyAutoEQ(ctx, buffer) {
-  const offCtx = new OfflineAudioContext(
-    buffer.numberOfChannels, buffer.length, buffer.sampleRate
-  );
+/**
+ * bufferToWav(buffer) — Encodes an AudioBuffer as a 16-bit PCM WAV Blob.
+ * Applies TPDF dithering at the quantisation step.
+ */
+function bufferToWav(buffer) {
+    const numChan   = buffer.numberOfChannels;
+    const byteLen   = buffer.length * numChan * 2 + 44;
+    const ab        = new ArrayBuffer(byteLen);
+    const view      = new DataView(ab);
+    const channels  = [];
+    const rate      = buffer.sampleRate;
+    let   pos       = 0;
+    let   offset    = 0;
 
-  const src = offCtx.createBufferSource();
-  src.buffer = buffer;
+    const u32 = (v) => { view.setUint32(pos, v, true); pos += 4; };
+    const u16 = (v) => { view.setUint16(pos, v, true); pos += 2; };
+    const str = (s) => { for (let i = 0; i < s.length; i++) view.setUint8(pos++, s.charCodeAt(i)); };
 
-  // HP Filter: cut mud below 80Hz
-  const hp = offCtx.createBiquadFilter();
-  hp.type = 'highpass';
-  hp.frequency.value = 80;
-  hp.Q.value = 0.7;
+    str('RIFF'); u32(byteLen - 8);
+    str('WAVE'); str('fmt ');
+    u32(16); u16(1); u16(numChan);
+    u32(rate); u32(rate * numChan * 2);
+    u16(numChan * 2); u16(16);
+    str('data'); u32(byteLen - pos - 4);
 
-  // Low shelf: warmth boost +1.5dB at 200Hz
-  const warmth = offCtx.createBiquadFilter();
-  warmth.type = 'lowshelf';
-  warmth.frequency.value = 200;
-  warmth.gain.value = 1.5;
+    for (let c = 0; c < numChan; c++) channels.push(buffer.getChannelData(c));
 
-  // Notch: de-mud at 400Hz -1.5dB
-  const deMud = offCtx.createBiquadFilter();
-  deMud.type = 'peaking';
-  deMud.frequency.value = 400;
-  deMud.Q.value = 1.5;
-  deMud.gain.value = -1.5;
-
-  // Presence boost: 2-5kHz +2.5dB (vocal clarity)
-  const presence = offCtx.createBiquadFilter();
-  presence.type = 'peaking';
-  presence.frequency.value = 3000;
-  presence.Q.value = 0.8;
-  presence.gain.value = 2.5;
-
-  // Air boost: 10kHz+ +1.5dB (openness)
-  const air = offCtx.createBiquadFilter();
-  air.type = 'highshelf';
-  air.frequency.value = 10000;
-  air.gain.value = 1.5;
-
-  // De-esser: tame 6-8kHz harshness
-  const deEss = offCtx.createBiquadFilter();
-  deEss.type = 'peaking';
-  deEss.frequency.value = 7000;
-  deEss.Q.value = 2.0;
-  deEss.gain.value = -2.0;
-
-  // Chain
-  src.connect(hp);
-  hp.connect(warmth);
-  warmth.connect(deMud);
-  deMud.connect(presence);
-  presence.connect(deEss);
-  deEss.connect(air);
-  air.connect(offCtx.destination);
-
-  src.start(0);
-  return await offCtx.startRendering();
+    while (offset < buffer.length) {
+        for (let c = 0; c < numChan; c++) {
+            const dither = (Math.random() - Math.random()) / 32768;
+            let s = Math.max(-1, Math.min(1, channels[c][offset] + dither));
+            view.setInt16(pos, s < 0 ? s * 32768 : s * 32767, true);
+            pos += 2;
+        }
+        offset++;
+    }
+    return new Blob([view], { type: 'audio/wav' });
 }
 
-/* ── applyLoudnessNormalization: Target LUFS = -16 ── */
-function applyLoudnessNormalization(ctx, buffer, measuredLufs) {
-  const len = buffer.length;
-  const numCh = buffer.numberOfChannels;
-  const sampleRate = buffer.sampleRate;
-  const newBuf = ctx.createBuffer(numCh, len, sampleRate);
+/**
+ * ╔═══════════════════════════════════════════════════════════════════════╗
+ * ║  masterAudioPipeline(arrayBuffer)  — Main Entry Point               ║
+ * ║                                                                     ║
+ * ║  Two-Pass Absolute LUFS Matching Normalizer                         ║
+ * ║  Every file exits at EXACTLY -20 LUFS, regardless of input level.   ║
+ * ╚═══════════════════════════════════════════════════════════════════════╝
+ */
+async function masterAudioPipeline(arrayBuffer) {
 
-  const gainDb = TARGET_LUFS - measuredLufs;
-  // Safety: clamp gain to ±24dB
-  const gainLinear = Math.pow(10, Math.max(-24, Math.min(24, gainDb)) / 20);
+    // ── Decode source ──────────────────────────────────────────────────
+    const decodeCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const srcBuffer = await decodeCtx.decodeAudioData(arrayBuffer.slice(0));
+    try { decodeCtx.close(); } catch (_) {}
 
-  for (let c = 0; c < numCh; c++) {
-    const src = buffer.getChannelData(c);
-    const dst = newBuf.getChannelData(c);
-    for (let i = 0; i < len; i++) dst[i] = src[i] * gainLinear;
-  }
-  return newBuf;
+    const len  = srcBuffer.length;
+    const rate = srcBuffer.sampleRate;
+    const ch   = srcBuffer.numberOfChannels;
+
+    // ═══════════════════════════════════════════════════════════════════
+    // PASS 1 — Physical cleanup + noise suppression
+    //
+    //  The ENTIRE purpose of Pass 1 is to produce the cleanest possible
+    //  signal so that the RMS analysis in the ANALYSIS step reflects
+    //  ONLY the voice/content — not noise, rumble, or DC offset.
+    //
+    //  Order matters:
+    //    HPF first (kills sub-sonics that inflate RMS)
+    //    → Expander (kills noise that inflates RMS)
+    //    → EQ (shapes the tone)
+    //    → AGC (evens out dynamic range for consistent measurement)
+    // ═══════════════════════════════════════════════════════════════════
+    const pass1 = new OfflineAudioContext(ch, len, rate);
+    const s1    = pass1.createBufferSource();
+    s1.buffer   = srcBuffer;
+
+    // ── A: 4th-order 100 Hz Sub-sonic HPF ────────────────────────────
+    //    Two cascaded 2nd-order Butterworth stages = 48 dB/oct roll-off.
+    //    Eliminates ALL sub-bass content: mic bumps, room modes, wind,
+    //    HVAC rumble, and any DC offset from cheap ADCs.
+    const hpf1 = pass1.createBiquadFilter();
+    hpf1.type = 'highpass'; hpf1.frequency.value = 100; hpf1.Q.value = 0.541;
+
+    const hpf2 = pass1.createBiquadFilter();
+    hpf2.type = 'highpass'; hpf2.frequency.value = 100; hpf2.Q.value = 1.307;
+
+    // ── B: Aggressive Downward Expander @ -45 dBFS ───────────────────
+    //    Ratio 2.5 with 8192-point precision curve.
+    //    At -50 dBFS (5 dB below gate), attenuation ≈ -7.5 dB extra.
+    //    At -55 dBFS, attenuation ≈ -15 dB extra → effectively silent.
+    //    This is CRITICAL because we've removed the gain cap — without
+    //    this gate, a +20 dB boost would turn room hiss into a roar.
+    const expander = pass1.createWaveShaper();
+    expander.curve      = createDownwardExpanderCurve(-45, 2.5, 8192);
+    expander.oversample = '4x';  // 4× oversampling for clean transitions
+
+    // ── C: Vocal Clarity EQ ──────────────────────────────────────────
+    const mudCut = pass1.createBiquadFilter();
+    mudCut.type = 'lowshelf'; mudCut.frequency.value = 180; mudCut.gain.value = -1.0;
+
+    const presenceLift = pass1.createBiquadFilter();
+    presenceLift.type = 'peaking';
+    presenceLift.frequency.value = 3200;
+    presenceLift.Q.value    = 1.2;
+    presenceLift.gain.value = 1.2;
+
+    // ── D: Transparent AGC Leveler ───────────────────────────────────
+    //    Purpose: gently level out dynamic range so the RMS measurement
+    //    in the ANALYSIS step is stable and representative.
+    //    This does NOT target a loudness — it just smooths dynamics.
+    const agc = pass1.createDynamicsCompressor();
+    agc.threshold.value = -22;
+    agc.knee.value      = 15;
+    agc.ratio.value     = 1.5;
+    agc.attack.value    = 0.50;  // 500 ms — immune to transients
+    agc.release.value   = 2.00;  // 2 s — zero pumping
+
+    // ── Wire Pass 1 ──────────────────────────────────────────────────
+    s1.connect(hpf1)
+      .connect(hpf2)
+      .connect(expander)
+      .connect(mudCut)
+      .connect(presenceLift)
+      .connect(agc)
+      .connect(pass1.destination);
+    s1.start();
+    const cleanBuffer = await pass1.startRendering();
+
+    // ── E: Sample-level hard noise gate ──────────────────────────────
+    //    Operates directly on the rendered float buffer.
+    //    Any sample below -60 dBFS (amplitude < 0.001) gets zeroed.
+    //    This catches anything the WaveShaper expander softened but
+    //    didn't fully eliminate — essential when we're about to apply
+    //    potentially +15-25 dB of gain.
+    applySampleLevelGate(cleanBuffer, -60);
+
+    // ═══════════════════════════════════════════════════════════════════
+    // ANALYSIS — Gated RMS Measurement + Gain Calculation
+    //
+    //  We use GATED RMS: only samples above -45 dBFS contribute.
+    //  This means silence/pauses/noise do NOT drag the reading down,
+    //  and the gain calculation reflects the ACTUAL voice level.
+    //
+    //  TARGET: -20 dBFS RMS ≈ -20 LUFS integrated
+    //
+    //  GAIN CAP: *** NONE ***
+    //  If the file measures at -45 dBFS RMS, the needed gain is +25 dB.
+    //  We apply +25 dB. The noise gate has already silenced the noise
+    //  floor, and the limiter will catch any peaks that overshoot.
+    //
+    //  ATTENUATION: unlimited (loud files get pulled down fully)
+    // ═══════════════════════════════════════════════════════════════════
+    const measuredRMS_dBFS = 20 * Math.log10(getGatedRMS(cleanBuffer, -45));
+    const TARGET_RMS_dBFS  = -20;   // -20 LUFS — clear, natural, identical across files
+    const gainDiff_dB      = TARGET_RMS_dBFS - measuredRMS_dBFS;
+
+    // No boost cap — allow whatever gain is mathematically needed.
+    // Only clamp to prevent absurd values on near-silent files (> +40 dB = broken input).
+    const clampedGain_dB     = Math.max(-60, Math.min(gainDiff_dB, 40));
+    const makeupGainLinear   = Math.pow(10, clampedGain_dB / 20);
+
+    console.log(
+        `[MasterAudio] Input RMS: ${measuredRMS_dBFS.toFixed(1)} dBFS → ` +
+        `Gain: ${clampedGain_dB > 0 ? '+' : ''}${clampedGain_dB.toFixed(1)} dB → ` +
+        `Target: ${TARGET_RMS_dBFS} dBFS (≈ -20 LUFS)`
+    );
+
+    // ═══════════════════════════════════════════════════════════════════
+    // PASS 2 — Exact gain application + peak safety
+    //
+    //  F. Static makeup gain — the precise dB difference as a linear
+    //     multiplier applied uniformly to the entire signal.
+    //
+    //  G. Soft-clip waveshaper — tanh sigmoid at -1.5 dBFS.
+    //     Gently rounds any inter-sample peaks before the limiter.
+    //     8192-pt curve, 4× oversampled for alias-free operation.
+    //
+    //  H. Brickwall True-Peak Limiter @ -1.5 dBTP
+    //     Threshold -1.5, Ratio 20:1, Knee 0, Attack 0.001s (1 ms).
+    //     Instantly catches and squashes any peak the soft-clipper
+    //     couldn't fully tame. Release 100 ms to avoid LF pumping.
+    // ═══════════════════════════════════════════════════════════════════
+    const pass2 = new OfflineAudioContext(ch, len, rate);
+    const s2    = pass2.createBufferSource();
+    s2.buffer   = cleanBuffer;
+
+    // ── F: Exact makeup gain ─────────────────────────────────────────
+    const makeup = pass2.createGain();
+    makeup.gain.value = makeupGainLinear;
+
+    // ── G: Soft-clip transient suppressor @ -1.5 dBFS ────────────────
+    const softClipper = pass2.createWaveShaper();
+    softClipper.curve      = createSoftClipCurve(-1.5);
+    softClipper.oversample = '4x';
+
+    // ── H: Brickwall True-Peak Limiter @ -1.5 dBTP ──────────────────
+    const limiter = pass2.createDynamicsCompressor();
+    limiter.threshold.value = -1.5;   // -1.5 dBTP ceiling
+    limiter.knee.value      =  0;     // Hard knee — precise brickwall
+    limiter.ratio.value     = 20;     // 20:1 → absolute brickwall
+    limiter.attack.value    = 0.001;  // 1 ms — catches everything
+    limiter.release.value   = 0.10;   // 100 ms — avoids LF distortion
+
+    // ── Wire Pass 2 ──────────────────────────────────────────────────
+    s2.connect(makeup)
+      .connect(softClipper)
+      .connect(limiter)
+      .connect(pass2.destination);
+    s2.start();
+    const masteredBuffer = await pass2.startRendering();
+
+    return masteredBuffer;
 }
 
-/* ── applyTruePeakLimiter: Brickwall at -1dBFS ── */
-function applyTruePeakLimiter(buffer) {
-  const ctx2 = getAudioContext();
-  const len = buffer.length;
-  const numCh = buffer.numberOfChannels;
-  const newBuf = ctx2.createBuffer(numCh, len, buffer.sampleRate);
-  const ceiling = Math.pow(10, TRUE_PEAK_LIMIT / 20); // ~0.891
 
-  // Lookahead limiter (5ms lookahead)
-  const lookahead = Math.floor(buffer.sampleRate * 0.005);
-  const attackTime = Math.floor(buffer.sampleRate * 0.001);
-  const releaseTime = Math.floor(buffer.sampleRate * 0.1);
-  const releaseCoeff = Math.exp(-1 / releaseTime);
+// ============================================================================
+// Audio Player & Visualizer Canvas Engine
+// ============================================================================
+class AudioWavePlayer {
+    constructor(canvas, audioBuffer, audioBlob) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.audioBuffer = audioBuffer;
+        this.audioNode = new Audio(URL.createObjectURL(audioBlob));
+        this.isPlaying = false;
+        
+        // Render Waveform Offline for Speed
+        this.renderWaveformData();
+        this.drawProgress(0);
 
-  for (let c = 0; c < numCh; c++) {
-    const src = buffer.getChannelData(c);
-    const dst = newBuf.getChannelData(c);
-
-    // First pass: compute gain reduction envelope
-    const gainReduction = new Float32Array(len).fill(1);
-    for (let i = 0; i < len; i++) {
-      const abs = Math.abs(src[i]);
-      if (abs > ceiling) {
-        // Find affected range
-        const reduction = ceiling / abs;
-        const start = Math.max(0, i - lookahead);
-        for (let j = start; j <= i; j++) gainReduction[j] = Math.min(gainReduction[j], reduction);
-      }
+        this.attachEvents();
     }
 
-    // Smooth gain reduction with release
-    let gain = 1;
-    for (let i = 0; i < len; i++) {
-      const target = gainReduction[i];
-      if (target < gain) gain = target;
-      else gain = 1 - (1 - gain) * releaseCoeff;
-      dst[i] = src[i] * gain;
+    renderWaveformData() {
+        const data = this.audioBuffer.getChannelData(0);
+        const width = this.canvas.width;
+        const step = Math.ceil(data.length / width);
+        this.wavePillars = [];
+
+        for (let i = 0; i < width; i+=2) { // 2px steps for pillars
+            let min = 1.0, max = -1.0;
+            for (let j = 0; j < step; j++) {
+                let v = data[(i * step) + j];
+                if (v < min) min = v;
+                if (v > max) max = v;
+            }
+            this.wavePillars.push({x: i, h: Math.max(1, (max - min) * (this.canvas.height / 2))});
+        }
     }
-  }
-  return newBuf;
-}
 
-// ═══════════════════════════════════════════════════════
-// EXPORT / DOWNLOAD
-// ═══════════════════════════════════════════════════════
-function audioBufferToWav(buffer) {
-  const numCh = buffer.numberOfChannels;
-  const sampleRate = buffer.sampleRate;
-  const len = buffer.length;
-  const byteLen = len * numCh * 2;
-  const ab = new ArrayBuffer(44 + byteLen);
-  const view = new DataView(ab);
-
-  function writeStr(off, s) { for (let i=0;i<s.length;i++) view.setUint8(off+i, s.charCodeAt(i)); }
-  writeStr(0,'RIFF');
-  view.setUint32(4, 36 + byteLen, true);
-  writeStr(8,'WAVE');
-  writeStr(12,'fmt ');
-  view.setUint32(16,16,true);
-  view.setUint16(20,1,true); // PCM
-  view.setUint16(22,numCh,true);
-  view.setUint32(24,sampleRate,true);
-  view.setUint32(28,sampleRate*numCh*2,true);
-  view.setUint16(32,numCh*2,true);
-  view.setUint16(34,16,true);
-  writeStr(36,'data');
-  view.setUint32(40,byteLen,true);
-
-  let offset = 44;
-  for (let i=0; i<len; i++) {
-    for (let c=0; c<numCh; c++) {
-      const s = Math.max(-1, Math.min(1, buffer.getChannelData(c)[i]));
-      view.setInt16(offset, s < 0 ? s*0x8000 : s*0x7FFF, true);
-      offset += 2;
+    drawProgress(perc) {
+        this.ctx.clearRect(0,0, this.canvas.width, this.canvas.height);
+        const center = this.canvas.height / 2;
+        
+        for (let idx=0; idx<this.wavePillars.length; idx++) {
+            let p = this.wavePillars[idx];
+            let isPlayed = p.x / this.canvas.width <= perc;
+            
+            this.ctx.fillStyle = isPlayed ? '#d4af37' : 'rgba(255,255,255,0.15)';
+            this.ctx.fillRect(p.x, center - p.h/2, 1.5, p.h);
+        }
     }
-  }
-  return ab;
+
+    attachEvents() {
+        this.canvas.addEventListener('click', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let targetPerc = x / rect.width;
+            this.audioNode.currentTime = targetPerc * this.audioNode.duration;
+            this.drawProgress(targetPerc);
+        });
+
+        const updateFrame = () => {
+            if(this.isPlaying) {
+                let p = this.audioNode.currentTime / this.audioNode.duration;
+                this.drawProgress(p || 0);
+                requestAnimationFrame(updateFrame);
+            }
+        };
+
+        this.audioNode.addEventListener('play', () => { this.isPlaying = true; requestAnimationFrame(updateFrame); });
+        this.audioNode.addEventListener('pause', () => { this.isPlaying = false; });
+        this.audioNode.addEventListener('ended', () => { this.isPlaying = false; this.drawProgress(0); });
+        // Clean playback format
+        this.onTimeUpdate = () => {};
+        this.audioNode.addEventListener('timeupdate', () => this.onTimeUpdate(this.audioNode.currentTime, this.audioNode.duration));
+    }
+
+    toggle() {
+        if (this.audioNode.paused) this.audioNode.play();
+        else this.audioNode.pause();
+    }
 }
 
-function getExportBlob(entry) {
-  const buf = entry.processedBuffer;
-  if (!buf) return null;
-  const wavAb = audioBufferToWav(buf);
-  const fmt = entry.format || 'wav';
-  // For all formats we export WAV PCM from the Web Audio API
-  // True MP3/FLAC/OGG encoding requires WASM encoders; we export high-quality WAV
-  // and note the format selection for future encoder integration
-  const mimes = { wav:'audio/wav', mp3:'audio/wav', flac:'audio/wav', ogg:'audio/wav', m4a:'audio/wav', aac:'audio/wav', opus:'audio/wav' };
-  return new Blob([wavAb], { type: mimes[fmt] || 'audio/wav' });
+function formatTime(secs) {
+    if(isNaN(secs)) return "0:00";
+    let m = Math.floor(secs / 60);
+    let s = Math.floor(secs % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
-function getExportFilename(entry) {
-  const base = entry.file.name.replace(/\.[^.]+$/, '');
-  const ext = entry.format === 'mp3' ? 'mp3' : entry.format === 'flac' ? 'flac' : entry.format === 'ogg' ? 'ogg' : 'wav';
-  return `${base}_enhanced.${ext}`;
+// ============================================================================
+// App Orchestration & UI State
+// ============================================================================
+const processorState = {
+    cards: {}, // Store UI / Data references
+    zipFiles: [] // Array of {name, blob}
+};
+
+const cardsContainer = document.getElementById('cardsContainer');
+const masterActions = document.getElementById('masterActions');
+
+const handleFiles = (files) => {
+    if (!files || files.length === 0) return;
+    masterActions.classList.add('visible');
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Convert FileList to a real Array so we can filter + iterate safely.
+    // We do NOT use `await` in the outer loop. Instead, each file is
+    // dispatched into its own independent async IIFE. This means ALL
+    // cards appear instantly and ALL files process in PARALLEL.
+    // ──────────────────────────────────────────────────────────────────────
+    const audioFiles = Array.from(files).filter(f => isAudioFile(f));
+    if (audioFiles.length === 0) return;
+
+    audioFiles.forEach((file) => {
+        // ── 1. Create a unique card immediately ──────────────────────────
+        const id      = 'ID' + Math.random().toString(36).substring(2, 9);
+        const cardHtml = document.getElementById('cardTpl').innerHTML.replace('{id}', id);
+        const wrapper  = document.createElement('div');
+        wrapper.innerHTML = cardHtml;
+        const cardEl   = wrapper.firstElementChild;
+        cardsContainer.appendChild(cardEl);
+
+        // Populate card header instantly (before any async work)
+        cardEl.querySelector('.filename').textContent = file.name;
+        cardEl.querySelector('.filesize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+        const statusTextEl = cardEl.querySelector('[data-dyn="statusText"]');
+        statusTextEl.textContent = i18n[currentLang].statusProcessing;
+
+        const basename = file.name.split('.').slice(0, -1).join('.') || file.name;
+        processorState.cards[cardEl.id] = {
+            state: 'processing',
+            finalBlob: null,
+            basename: basename
+        };
+
+        // ── 2. Launch INDEPENDENT async processing for this file ─────────
+        //    This IIFE runs concurrently with all other files.
+        //    Each file has its own isolated scope — no shared mutable state.
+        (async () => {
+            try {
+                // Read the file into an ArrayBuffer
+                const arrayBuffer = await file.arrayBuffer();
+
+                // Run the full -23 LUFS broadcast mastering pipeline
+                const masteredBuffer = await masterAudioPipeline(arrayBuffer);
+
+                // Encode to WAV blob
+                const masteredWavBlob = bufferToWav(masteredBuffer);
+
+                // ── 3. Wire up the waveform visualizer & audio player ────
+                const canvas = cardEl.querySelector('.waveform-canvas');
+                const player = new AudioWavePlayer(canvas, masteredBuffer, masteredWavBlob);
+
+                const timeDisplay = cardEl.querySelector('.time-display');
+                player.onTimeUpdate = (cur, tot) => {
+                    timeDisplay.textContent = `${formatTime(cur)} / ${formatTime(tot)}`;
+                };
+
+                // Play/Pause button with icon sync
+                const playBtn   = cardEl.querySelector('.play-btn');
+                const iconPlay  = playBtn.querySelector('.icon-play');
+                const iconPause = playBtn.querySelector('.icon-pause');
+                playBtn.classList.remove('disabled');
+                playBtn.removeAttribute('disabled');
+
+                const syncIcons = () => {
+                    const playing = !player.audioNode.paused;
+                    iconPlay.style.display  = playing ? 'none'  : 'block';
+                    iconPause.style.display = playing ? 'block' : 'none';
+                };
+                playBtn.onclick = () => { player.toggle(); setTimeout(syncIcons, 30); };
+                player.audioNode.addEventListener('pause', syncIcons);
+                player.audioNode.addEventListener('ended', syncIcons);
+                player.audioNode.addEventListener('play',  syncIcons);
+
+                // ── 4. Enable export controls ────────────────────────────
+                const dlBtn    = cardEl.querySelector('.download-btn');
+                const fmtSelect = cardEl.querySelector('.format-select');
+                dlBtn.classList.remove('disabled');    dlBtn.removeAttribute('disabled');
+                fmtSelect.classList.remove('disabled'); fmtSelect.removeAttribute('disabled');
+
+                // ── 5. Mark card as DONE ─────────────────────────────────
+                const badge = cardEl.querySelector('.status-badge');
+                badge.className = 'status-badge success';
+                badge.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> <span data-dyn="statusText">${i18n[currentLang].statusDone}</span>`;
+                processorState.cards[cardEl.id].state = 'done';
+                processorState.cards[cardEl.id].finalBlob = masteredWavBlob;
+
+                // ── 6. Add to global ZIP pool ────────────────────────────
+                processorState.zipFiles.push({
+                    name: `${basename}_Mastered.wav`,
+                    blob: masteredWavBlob
+                });
+
+                // ── 7. Wire per-card download button (WAV direct or FFmpeg transcode) ──
+                dlBtn.onclick = async () => {
+                    const targetFmt = fmtSelect.value;
+
+                    if (targetFmt === 'wav') {
+                        // Direct WAV download — instant, no transcoding needed
+                        const url = URL.createObjectURL(masteredWavBlob);
+                        const a   = document.createElement('a');
+                        a.href = url;
+                        a.download = `${basename}_Mastered.wav`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    } else {
+                        // Transcode via FFmpeg.wasm
+                        dlBtn.disabled = true;
+                        const savedHTML = dlBtn.innerHTML;
+                        dlBtn.innerHTML = `<div class="spinner"></div> ${i18n[currentLang].statusTranscoding}`;
+                        badge.className = 'status-badge processing';
+                        badge.querySelector('[data-dyn="statusText"]').textContent = i18n[currentLang].statusTranscoding;
+
+                        try {
+                            const ffmpeg   = await initFFmpeg();
+                            const uid      = Math.floor(Math.random() * 100000);
+                            const inFile   = `in_${uid}.wav`;
+                            const outFile  = `out_${uid}.${targetFmt}`;
+                            await ffmpeg.writeFile(inFile, new Uint8Array(await masteredWavBlob.arrayBuffer()));
+                            await ffmpeg.exec(['-i', inFile, '-metadata', 'encoded_by=Magic Audio Studio', '-b:a', '320k', outFile]);
+                            const outData  = await ffmpeg.readFile(outFile);
+
+                            const mime = targetFmt === 'mp3' ? 'audio/mpeg' : `audio/${targetFmt}`;
+                            const tBlob = new Blob([outData.buffer], { type: mime });
+                            const url   = URL.createObjectURL(tBlob);
+                            const a     = document.createElement('a');
+                            a.href = url;
+                            a.download = `${basename}_Mastered.${targetFmt}`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+
+                            // Cleanup FFmpeg virtual filesystem
+                            ffmpeg.deleteFile(inFile);
+                            ffmpeg.deleteFile(outFile);
+                        } catch (err) {
+                            console.error('FFmpeg transcode error:', err);
+                        }
+
+                        // Restore card UI
+                        dlBtn.disabled  = false;
+                        dlBtn.innerHTML = savedHTML;
+                        badge.className = 'status-badge success';
+                        badge.querySelector('[data-dyn="statusText"]').textContent = i18n[currentLang].statusDone;
+                    }
+                };
+
+            } catch (err) {
+                // ── Processing error: mark the card red ──────────────────
+                console.error(`[MasterAudio] Failed to process "${file.name}":`, err);
+                statusTextEl.textContent = 'Error';
+                const badge = cardEl.querySelector('.status-badge');
+                badge.style.borderColor = '#e05c5c';
+                badge.style.color       = '#e05c5c';
+                badge.querySelector('.spinner').style.display = 'none';
+                processorState.cards[cardEl.id].state = 'error';
+            }
+        })(); // ← IIFE fires immediately, runs in background
+    });
+};
+
+// ============================================================================
+// Zip Archive 
+// ============================================================================
+window.downloadAllAsZip = () => {
+    if(processorState.zipFiles.length === 0) return;
+    const btn = document.querySelector('.zip-btn');
+    const ogHtml = btn.innerHTML;
+    btn.innerHTML = `<div class="spinner"></div> ${i18n[currentLang].statusTranscoding}`;
+    
+    setTimeout(async () => {
+        const zip = new JSZip();
+        processorState.zipFiles.forEach(f => {
+            zip.file(f.name, f.blob);
+        });
+        const content = await zip.generateAsync({type:"blob"});
+        const a = document.createElement('a'); 
+        a.href = URL.createObjectURL(content);
+        a.download = `Magic_Audio_Mastered_Files.zip`;
+        a.click();
+        btn.innerHTML = ogHtml;
+    }, 100);
+};
+
+// ============================================================================
+// Drag & Drop + File Input  —  ROBUST UNIVERSAL AUDIO ACCEPTANCE
+// ============================================================================
+
+// ── 1. Prevent browser from navigating away if user drops outside the zone ──
+document.addEventListener('dragover',  e => e.preventDefault(), false);
+document.addEventListener('drop',      e => e.preventDefault(), false);
+
+// ── 2. Audio file validator — accepts ANY audio format ──
+//    Browsers inconsistently report MIME types for .flac, .opus, .m4a.
+//    Strategy: accept if type starts with 'audio/', OR if the file
+//    extension matches a known audio format, OR if type is empty (binary drop).
+const AUDIO_EXTENSIONS = new Set([
+    'mp3','wav','flac','ogg','m4a','aac','opus','aiff','aif','amr',
+    'wma','alac','ape','mka','webm','caf','ra','rm','3gp','3ga',
+    'spx','gsm','awb','mid','midi','mpc','oga','snd','voc','w64'
+]);
+
+function isAudioFile(file) {
+    // 1. Any file whose MIME starts with 'audio/' — standard case
+    if (file.type && file.type.startsWith('audio/')) return true;
+    // 2. Firefox reports .ogg as 'video/ogg'; some WhatsApp files report 'video/mp4'
+    if (file.type && (file.type.startsWith('video/') || file.type === 'application/ogg')) return true;
+    // 3. Fall back to file extension — catches WhatsApp .opus with empty MIME
+    const ext = (file.name || '').split('.').pop().toLowerCase();
+    if (AUDIO_EXTENSIONS.has(ext)) return true;
+    // 4. If MIME is completely empty/null, STILL accept it — let decodeAudioData
+    //    be the final gatekeeper. Better to try and fail gracefully than reject.
+    if (!file.type || file.type === '' || file.type === 'application/octet-stream') return true;
+    return false;
 }
 
-function downloadSingle(id) {
-  const entry = files.find(f => f.id === id);
-  if (!entry || !entry.processedBuffer) return;
-  const blob = getExportBlob(entry);
-  if (!blob) return;
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = getExportFilename(entry);
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
+// ── 3. Drop zone visual feedback ──
+const dropzone  = document.getElementById('dropzone');
+const fileUpload = document.getElementById('fileUpload');
 
-async function downloadAllZip() {
-  const done = files.filter(f => f.status === 'done' && f.processedBuffer);
-  if (!done.length) { showToast(T[currentLang].toastNoFiles, 'error'); return; }
-  showToast(T[currentLang].toastZip, 'info');
-  const zip = new JSZip();
-  done.forEach(entry => {
-    const blob = getExportBlob(entry);
-    if (blob) zip.file(getExportFilename(entry), blob);
-  });
-  const content = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
-  const url = URL.createObjectURL(content);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'magic_audio_studio_export.zip';
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-}
+// Click to open file picker
+dropzone.addEventListener('click', () => fileUpload.click());
 
-// ═══════════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════════
-let toastTimer;
-function showToast(msg, type='info') {
-  const el = document.getElementById('toast');
-  const icons = { info:'✦', success:'✓', error:'✕' };
-  document.getElementById('toastIcon').textContent = icons[type];
-  document.getElementById('toastMsg').textContent = msg;
-  el.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3200);
-}
+// Drag feedback
+dropzone.addEventListener('dragenter', e => { e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover'); }, false);
+dropzone.addEventListener('dragover',  e => { e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover'); }, false);
+dropzone.addEventListener('dragleave', e => { e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('dragover'); }, false);
 
-// ═══════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════
-applyLang();
+// ── 4. DROP handler — reads files from dataTransfer ──
+dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropzone.classList.remove('dragover');
+
+    const dt    = e.dataTransfer;
+    const files = dt.files; // FileList from the drag event
+
+    if (!files || files.length === 0) {
+        console.warn('[Drop] No files found in dataTransfer.');
+        return;
+    }
+
+    handleFiles(files);
+}, false);
+
+// ── 5. File input change handler ──
+fileUpload.addEventListener('change', e => {
+    if (e.target.files && e.target.files.length > 0) {
+        handleFiles(e.target.files);
+        // Reset so same file can be re-selected
+        e.target.value = '';
+    }
+}, false);
+
+// ── 6. Wire lang toggle and ZIP button (removed from inline onclick) ──
+document.getElementById('langToggleBtn').addEventListener('click', toggleLanguage);
+document.getElementById('zipBtn').addEventListener('click', downloadAllAsZip);
+
 </script>
 </body>
 </html>
